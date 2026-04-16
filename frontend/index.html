@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Price Tracker Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1><i class="fa-solid fa-robot"></i> Price Tracking Assistant</h1>
+            <p>We monitor your desired product 24/7 and notify you instantly when the price drops!</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form id="tracker-form">
+                    <div class="input-group">
+                        <label for="product-url">Product Link (URL)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-link"></i>
+                            <input type="url" id="product-url" placeholder="https://example-shop.com/product" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="target-price">Target Price ($)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-tag"></i>
+                            <input type="number" id="target-price" placeholder="e.g. 150" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group contact-group">
+                        <label>Contact Method</label>
+                        <div class="contact-options">
+                            <label class="radio-label">
+                                <input type="radio" name="contact-method" value="telegram" checked>
+                                <span class="custom-radio"><i class="fa-brands fa-telegram"></i> Telegram</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="contact-method" value="email">
+                                <span class="custom-radio"><i class="fa-solid fa-envelope"></i> Email</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="contact-info-group">
+                        <label for="contact-info" id="contact-label">Telegram Username or Number</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-address-book" id="contact-icon"></i>
+                            <input type="text" id="contact-info" placeholder="e.g. @username" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group notification-group">
+                        <label>Notification Type</label>
+                        <div class="notification-options">
+                            <label class="notification-label">
+                                <input type="radio" name="notification-type" value="mandatory" checked>
+                                <div class="notification-box">
+                                    <span class="notification-title"><i class="fa-solid fa-clock-rotate-left"></i> Mandatory Notification</span>
+                                    <span class="notification-desc">Regular updates are provided.</span>
+                                </div>
+                            </label>
+                            <label class="notification-label">
+                                <input type="radio" name="notification-type" value="optional">
+                                <div class="notification-box">
+                                    <span class="notification-title"><i class="fa-solid fa-arrow-trend-down"></i> Optional Notification</span>
+                                    <span class="notification-desc">Updates are provided only when the price drops.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fa-solid fa-bell"></i> Start Tracking
+                    </button>
+                </form>
+            </div>
+
+            <div class="visual-section">
+                <!-- Ürün Görseli Kutusu -->
+                <div class="image-box" id="product-image-box">
+                    <div class="image-placeholder" id="image-placeholder">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Waiting for Product Image...</span>
+                        <div class="scanning-animation" id="scanning-animation" style="display: none;">
+                            <div class="scanner-line"></div>
+                        </div>
+                    </div>
+                    <img id="product-image" src="" alt="Product Image" style="display: none;">
+                </div>
+                <div class="status-message" id="status-message">
+                    Please enter a product link.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
