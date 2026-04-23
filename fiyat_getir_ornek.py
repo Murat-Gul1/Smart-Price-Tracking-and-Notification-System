@@ -76,13 +76,13 @@ VIEWPORT_BOYUTLARI = [
 # Böylece birden fazla site/layout için esneklik sağlanır.
 
 FIYAT_SECICILERI = [
-    # Örnek: Trendyol
+    # Trendyol (Öncelikli)
     "span.prc-dsc",
     "span.prc-slg",
-    # Örnek: Amazon
+    # Amazon
     "span.a-price span.a-offscreen",
     "span.a-price-whole",
-    # Örnek: Hepsiburada
+    # Hepsiburada
     "span[data-bind='markupText: currentPriceBeforePoint']",
     # Genel e-ticaret siteleri için yaygın seçiciler
     ".product-price",
@@ -92,12 +92,13 @@ FIYAT_SECICILERI = [
 ]
 
 GORSEL_SECICILERI = [
-    # Örnek: Trendyol
+    # Trendyol (Öncelikli)
+    ".gallery-container img",
     "img.detail-section-img",
-    # Örnek: Amazon
+    # Amazon
     "#landingImage",
     "#imgBlkFront",
-    # Örnek: Hepsiburada
+    # Hepsiburada
     "img.product-image",
     # Genel
     ".gallery img",
