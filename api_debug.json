@@ -1,0 +1,296 @@
+[
+  {
+    "url": "https://cdn.dsmcdn.com/frontend/web/production/common-97ec81d433.style.css",
+    "status": 200,
+    "body_preview": "@keyframes loading{0%{transform:rotate(0deg)}to{transform:rotate(360deg)}}.ty-transition{transition:all .2s ease}.ty-scroll-disabled{overflow:hidden}.ty-scroll-disabled-body{overflow-y:scroll}.ty-transition-appear-enter{opacity:0}.ty-transition-appear-enter-active{opacity:1;transition:opacity 300ms}.ty-transition-appear-exit{opacity:1}.ty-transition-appear-exit-active{opacity:0;transition:opacity 300ms}.ty-bordered{border:solid 1px #e6e6e6;border-radius:3px}.ty-bordered-focus{background-color:#f"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-key-info.style.ffcbf748.css",
+    "status": 200,
+    "body_preview": ".desktop-location-select-modal .initial-modal-content .header .close-button:dir(ltr),.desktop-custom-location-select-modal .initial-modal-content .header .close-button:dir(ltr){margin-left:auto}.desktop-location-select-modal .initial-modal-content .header .close-button:dir(rtl),.desktop-custom-location-select-modal .initial-modal-content .header .close-button:dir(rtl){margin-right:auto}.desktop-location-select-modal .initial-modal-content .content .location-select-buttons .location-item-dropdown"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/nwpBtKy2OAdR1K-IwhWudF-R9QMylBJAV3Bo8Ky462EE9CsYm4fA1Tvwvw_1745309368257.woff2",
+    "status": 200,
+    "body_preview": "FAILED"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-image-gallery.style.152ab3d9.css",
+    "status": 200,
+    "body_preview": "[fragment-partial=product-image-gallery],#product-image-gallery{--carousel-navigation-button-size:40px;--carousel-navigation-button-icon-size:16px;--carousel-padding-mobile:16px;--carousel-width:400px;--carousel-height:auto;--carousel-margin-x-mobile:45px;--carousel-width-mobile:100%;--carousel-height-mobile:calc(( var(--carousel-height)*(100vw - var(--carousel-margin-x-mobile)*2 - 1px))/var(--carousel-width));--carousel-pagination-height:18px;--carousel-pagination-bottom-margin:15px;--thumbs-sl"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-info.style.e5718729.css",
+    "status": 200,
+    "body_preview": "[fragment-partial=product-info] .attribute-item,[fragment-partial=product-info-preview] .attribute-item,#product-info .attribute-item{color:#1c1c1c;border-bottom:1px solid #e6e6e6;gap:6px;padding:10px 0;font-size:16px;font-weight:400;line-height:18px;display:flex}[fragment-partial=product-info] .attribute-item.important:not(.preview),[fragment-partial=product-info-preview] .attribute-item.important:not(.preview),#product-info .attribute-item.important:not(.preview){flex-direction:column;gap:16px"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-detail.style.b8998046.css",
+    "status": 200,
+    "body_preview": "[fragment-partial=product-detail] .product-details-coupon-modal-body,#product-detail .product-details-coupon-modal-body{margin:24px}[fragment-partial=product-detail] .product-details-product-details-container,#product-detail .product-details-product-details-container{flex-direction:column;gap:8px;margin:16px;display:flex}[fragment-partial=product-detail] .product-details-product-details-container .product-details-other-details,#product-detail .product-details-product-details-container .product-d"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-detail-seo.style.b6c3e371.css",
+    "status": 200,
+    "body_preview": "#product-detail-breadcrumbs.web{width:max(660px,min(100%,1200px));padding-top:15px;padding-bottom:15px}#product-detail-breadcrumbs.web .breadcrumb-wrapper,#product-detail-breadcrumbs.web .breadcrumb-list{width:100%}#product-detail-breadcrumbs.web a{font-size:14px}#product-detail-breadcrumbs{box-sizing:border-box;letter-spacing:.3px;align-items:center;height:58px;margin:15px auto 0;display:flex}#product-detail-breadcrumbs .breadcrumb-wrapper{cursor:pointer;-ms-overflow-style:none;scrollbar-width:"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/nwpBtKy2OAdR1K-IwhWudF-R9QMylBJAV3Bo8Kxm7GEE9CsYm4fA1Tvwvw_1745309368257.woff2",
+    "status": 200,
+    "body_preview": "FAILED"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-actions.style.d8d6cb23.css",
+    "status": 200,
+    "body_preview": ".product-actions{gap:16px;height:48px;margin-bottom:16px;display:flex}.product-actions.other-page{width:100%}.product-actions .basket-warning-message{text-align:center}.product-actions.is-quick-look{align-items:center;gap:8px;display:flex;margin-top:0!important}.product-actions.is-quick-look .add-to-cart-button{height:39px}.product-actions.is-quick-look .add-to-cart-button-text{height:39px;font-size:16px;font-weight:600;line-height:19px}.product-actions.is-quick-look .sold-out-button{font-size:1"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/search_1738581746658.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 18 18\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M13.289 11.9395L17.7263 16.3951C18.1017 16.7721 18.0893 17.3731 17.6992 17.7355C17.5156 17.9062 17.2737 18 17.0187 18C16.7494 18 16.498 17.8967 16.3111 17.7093L11.8401 13.2199C10.5706 14.0812 9.08571 14.535 7.52752 14.535C3.37691 14.535 0 11.2747 0 7.26749C0 3.26026 3.37691 0 7.52752 0C11.6781 0 15.055 3.26026 15.055 7.26749C15.055 8.98262 14.4299 10.63"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/search_1761135568801.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M14.289 12.9395L18.7263 17.3951C19.1017 17.7721 19.0893 18.3731 18.6992 18.7355C18.5156 18.9062 18.2737 19 18.0187 19C17.7494 19 17.498 18.8967 17.3111 18.7093L12.8401 14.2199C11.5706 15.0812 10.0857 15.535 8.52752 15.535C4.37691 15.535 1 12.2747 1 8.26749C1 4.26026 4.37691 1 8.52752 1C12.6781 1 16.055 4.26026 16.055 8.26749C16.055 9.98262 15.4299 11.63"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/chevron_1759834805815.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 14 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M5.60939 2.48067C5.40004 2.68756 5.38872 3.03497 5.58412 3.25664L8.88354 6.99967L5.58412 10.7427C5.38872 10.9644 5.40004 11.3118 5.60939 11.5187C5.81874 11.7256 6.14685 11.7136 6.34225 11.4919L9.97188 7.37428C10.1578 7.16334 10.1578 6.83601 9.97188 6.62507L6.34225 2.50742C6.14685 2.28576 5.81874 2.27378 5.60939 2.48067Z\" fill=\"#333333\"/>\n</svg>\n"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/app-store-tr_1758114705536.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"138\" height=\"35\" viewBox=\"0 0 138 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<rect x=\"0.5\" y=\"0.5\" width=\"137\" height=\"34\" rx=\"17\" fill=\"black\"/>\n<rect x=\"0.5\" y=\"0.5\" width=\"137\" height=\"34\" rx=\"17\" stroke=\"#A6A6A6\"/>\n<path d=\"M27.6226 17.6681C27.633 16.8632 27.8474 16.074 28.2458 15.3739C28.6443 14.6738 29.2139 14.0856 29.9015 13.664C29.4647 13.0418 28.8884 12.5298 28.2183 12.1686C27.5483 11.8074 26.8031 11.607 26.0418 11.5832C24.4179 11.4132 22.8435 12.5522 22.016 12.5522"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/circle-search-with-particles-07122021.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"136\" height=\"142\" viewBox=\"0 0 136 142\" xmlns=\"http://www.w3.org/2000/svg\">\n    <g fill=\"none\" fill-rule=\"evenodd\">\n        <rect fill=\"#F3F3F3\" x=\"14.233\" y=\"18.977\" width=\"107.368\" height=\"107.368\" rx=\"53.684\"/>\n        <path d=\"M65.891 51.395c10.627 0 19.24 8.615 19.24 19.24 0 4.459-1.515 8.562-4.06 11.825l7.583 7.584a2.372 2.372 0 0 1-3.174 3.517l-.18-.163-7.584-7.583a19.157 19.157 0 0 1-11.825 4.061c-10.626 0-19.24-8.614-19.24-19.24 0-10.626 8.614-19.24 19.24-19.24zm0 4.745c-8.0"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/tr_1758114718934.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"146\" height=\"35\" viewBox=\"0 0 146 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<rect x=\"0.5\" y=\"0.5\" width=\"145\" height=\"34\" rx=\"17\" fill=\"black\"/>\n<rect x=\"0.5\" y=\"0.5\" width=\"145\" height=\"34\" rx=\"17\" stroke=\"#A6A6A6\"/>\n<g clip-path=\"url(#clip0_22987_168147)\">\n<path d=\"M21.8075 16.8299L12.0928 27.1376C12.3938 28.2596 13.4154 29.0805 14.6286 29.0805C15.1121 29.0805 15.5682 28.9528 15.9604 28.7157L15.9878 28.6974L26.9157 22.3942L21.7984 16.8208L21.8075 16.8299Z\" fill=\"#EA4335\"/"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/web/production/eye-able-config.js",
+    "status": 200,
+    "body_preview": "var eyeAble_pluginConfig = {\n  \"pluginPath\": \"https://cdn.dsmcdn.com/sfint/production/eye-able\",\n  \"azureDemoMode\": false,\n  \"disableZoom\": false,\n  \"license\": {\n    \"www.trendyol.com\": \"45348ccddee152f3epqtofdkg\"\n  },\n  \"mainIconAlt\": 2,\n  \"precisePosition\": true,\n  \"customFunctionPosition\": {\n    \"Bluefilter\": \"Main\",\n    \"Darkmode\": \"Main\",\n    \"TabNavi\": \"More\",\n    \"ColorCorrection\": \"Main\",\n    \"HideImages\": \"Main\",\n    \"LargeCursor\": \"More\",\n    \"StopAnimation\": \"More\"\n  },\n  \"topPosition"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/eye-able/public/js/eyeAble.js",
+    "status": 200,
+    "body_preview": "/*\n Copyright (C) Tobias Greiner - Web Inclusion GmBH\n Unauthorized copying of this file, via any medium is strictly prohibited\n Proprietary and confidential\n All Rights Reserved\n Written by Tobias Greiner tobias@eye-able.com, 2025\n*/\nvar $jscomp=$jscomp||{};$jscomp.scope={};$jscomp.arrayIteratorImpl=function(a){var b=0;return function(){return b<a.length?{done:!1,value:a[b++]}:{done:!0}}};$jscomp.arrayIterator=function(a){return{next:$jscomp.arrayIteratorImpl(a)}};$jscomp.ASSUME_ES5=!1;$jscomp."
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/appgallery-tr_1758114732620.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"150\" height=\"35\" viewBox=\"0 0 150 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n<rect x=\"0.5\" y=\"0.5\" width=\"149\" height=\"34\" rx=\"17\" fill=\"black\"/>\n<rect x=\"0.5\" y=\"0.5\" width=\"149\" height=\"34\" rx=\"17\" stroke=\"#A6A6A6\"/>\n<rect x=\"12\" y=\"7.5\" width=\"20\" height=\"20\" fill=\"url(#pattern0_22987_168161)\"/>\n<path d=\"M35.72 12V6.752H36.384V12H35.72ZM36.056 6.288C35.928 6.288 35.8187 6.248 35.728 6.168C35.6427 6.088 35.6 5.984 35.6 5.856C35.6 "
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/product-detail-seo.bundle.edd67889.js",
+    "status": 200,
+    "body_preview": "(()=>{var e={5(e,t,r){\"use strict\";var a;t.Storage=void 0,t.Storage=((a=r(741))&&a.__esModule?a:{default:a}).default},741(e,t,r){\"use strict\";Object.defineProperty(t,\"__esModule\",{value:!0});var a=function(e,t){if(Array.isArray(e))return e;if(Symbol.iterator in Object(e))return function(e,t){var r=[],a=!0,n=!1,o=void 0;try{for(var i,l=e[Symbol.iterator]();!(a=(i=l.next()).done)&&(r.push(i.value),!t||r.length!==t);a=!0);}catch(e){n=!0,o=e}finally{try{!a&&l.return&&l.return()}finally{if(n)throw o}"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-storefront-trproductgw-service/onboarding/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&if=!req.isDynamicRendering&isMobile=false&storefrontId=1&channelId",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__onboarding__CLIENTSIDE_RENDER\\\"]=true</script><script>window[\\\"__onboarding__PROPS\\\"]={\\\"storefront\\\":{\\\"id\\\":\\\"1\\\",\\\"code\\\":\\\"TR\\\",\\\"language\\\":\\\"tr\\\",\\\"otherLanguages\\\":[\\\"en\\\",\\\"ar\\\"],\\\"name\\\":\\\"Türkiye\\\",\\\"flag\\\":\\\"https:\\\\u002F\\\\u002Fcdn.dsmcdn.com\\\\u002Fmnresize\\\\u002F300\\\\u002F-\\\\u002Fsfint\\\\u002Fproduction\\\\u002Fflags\\\\u002Ftr.png\\\",\\\"regions\\\":[],\\\"geolocationAutoselectEnabled\\\":true,\\\"currency\\\":\\\"TRY\\\",\\\"currencySymbol\\\":\\\"TL\\\",\\\"phoneCode\\\":\\\"+90\\\",\\\"enabl"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-checkout-service/sidebar-basket/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&if=true&storefrontId=1&language=tr&tld=.com&countryCode=TR&channelId=1",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__sidebar-basket__CLIENTSIDE_RENDER\\\"]=true</script><script>window[\\\"__sidebar-basket__PROPS\\\"]={\\\"isSuccess\\\":true,\\\"translations\\\":{\\\"go_to_basket\\\":\\\"Sepete Git (:bold{{count}})\\\",\\\"subtotal\\\":\\\"Ara Toplam\\\",\\\"flash_sale\\\":\\\"Flaş Ürün!\\\",\\\"price_decreased\\\":\\\"Fiyat Düştü!\\\",\\\"running_out\\\":\\\"Tükeniyor!\\\",\\\"last_x_item\\\":\\\"Son :bold{{count}} Ürün!\\\",\\\"undo\\\":\\\"Geri Al\\\",\\\"running_out_text\\\":\\\":bold{{count}} Ürün Tükenmek Üzere\\\",\\\"go_to_basket_without_product_count\\\":"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-storefrontmarketing-marketinggw-service/internal-linking-seo/?__renderMode=stream&platform=WEB&storefrontId=1&channelId=1&language=tr&countryCode=TR&tld=.com&witho",
+    "status": 200,
+    "body_preview": "{\"main\":\"<div id=\\\"footer-fragment-context\\\" class=\\\"web\\\" data-drroot=\\\"internal-linking\\\" data-reactroot=\\\"\\\"><div data-testid=\\\"internal-links-footer\\\" class=\\\"internal-links-footer\\\"><section><div class=\\\"popular-list-title\\\"><strong>Popüler Marka ve Mağazalar</strong></div><ul><li><a href=\\\"/penti-x-b125\\\" title=\\\"Penti\\\">Penti</a></li><li><a href=\\\"/mango-x-b41\\\" title=\\\"Mango\\\">Mango</a></li><li><a href=\\\"/vivense-x-b106268\\\" title=\\\"Vivense\\\">Vivense</a></li><li><a href=\\\"/watsons-x-b862"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-storefrontmarketing-marketinggw-service/bic-seo/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&if=true&storefrontId=1&channelId=1&language=tr&tld=.com&coun",
+    "status": 200,
+    "body_preview": "{\"main\":\"<div class=\\\"boutique-list-landings-container\\\" data-drroot=\\\"bic-seo\\\"><h3 class=\\\"\\\">Bunlar da İlginizi Çekebilir</h3><div class=\\\"boutique-list-landings\\\"><div class=\\\"landings\\\"><a title=\\\"Bluetooth Kulaklık\\\" href=\\\"https://www.trendyol.com/bluetooth-kulaklik-x-c108626\\\">Bluetooth Kulaklık</a></div><div class=\\\"landings\\\"><a title=\\\"Laptop\\\" href=\\\"https://www.trendyol.com/laptop-x-c103108\\\">Laptop</a></div><div class=\\\"landings\\\"><a title=\\\"Apple Cep Telefonu\\\" href=\\\"https://www."
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-checkout-service/sd-basket-highlight/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&path=/apple/iphone-15-128-gb-p-782425137&channelId=1&storefrontId",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__sd-basket-highlight__PROPS\\\"]={\\\"isSuccess\\\":true,\\\"translations\\\":{\\\"title\\\":\\\"basket highlight\\\",\\\"size\\\":\\\"boyut\\\",\\\"basket_reminder_flash_sale\\\":\\\"Sepetinde :bold{{count} Adet} Flaş Ürün var!\\\",\\\"basket_reminder_running_out\\\":\\\"Acele Et! :bold{{count} Adet} Ürün Tükeniyor!\\\",\\\"basket_reminder_price_decreased\\\":\\\":bold{{count} Ürün} eklediğin fiyattan daha ucuz!\\\",\\\"basket_reminder_go_to_basket\\\":\\\"Sepete Git\\\"},\\\"configs\\\":{\\\"userInfo\\\":{\\\"isElite\\\":false,\\\"isGues"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-account-service/web-navigation-account-menu/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&slot=&storefrontId=1&channelId=1&language=tr&countryCode=T",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__web-navigation-account-menu__CLIENTSIDE_RENDER\\\"]=true</script><script>window[\\\"__web-navigation-account-menu__PROPS\\\"]={\\\"configs\\\":{\\\"gateways\\\":{\\\"authenticationGw\\\":\\\"https:\\\\u002F\\\\u002Fapigw.trendyol.com\\\\u002Fdiscovery-sfint-authentication-service\\\",\\\"accountGatewayUrl\\\":\\\"https:\\\\u002F\\\\u002Fapigw.trendyol.com\\\\u002Fdiscovery-sfint-account-service\\\"},\\\"flags\\\":{\\\"isLoginRegisterV2Enabled\\\":false,\\\"isMillaLoginRegisterV2Enabled\\\":false,\\\"isTyPlusEnabled\\\":true,"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/icons/instagram_circle_1665351098160.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g id=\"instagram\">\n<path id=\"Combined Shape\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M14 0C6.2692 0 0 6.2692 0 14C0 21.7308 6.2692 28 14 28C21.7308 28 28 21.7308 28 14C28 6.2692 21.7308 0 14 0ZM21.9906 17.3144C21.9517 18.1701 21.8156 18.7544 21.6169 19.2658C21.1993 20.3457 20.3457 21.1993 19.2658 21.6169C18.7546 21.8156 18.1701 21.9515 17.3146 21.9906C16.4573 22.0297 16.1834 22.0391 14.0002 22.0391"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/icons/tiktok_1688549895579.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M27.9986 13.9995C27.9986 21.7313 21.7308 27.9991 13.9991 27.9991C6.26732 27.9991 -0.000488281 21.7313 -0.000488281 13.9995C-0.000488281 6.26781 6.26732 0 13.9991 0C21.7308 0 27.9986 6.26781 27.9986 13.9995ZM20.9854 9.824L20.9853 10.4092C20.2041 10.242 19.4939 9.83475 18.9546 9.24503C19.5632 9.62529 20.2671 9.8249 20.9854 9.824ZM17.1611 11.3456C18.2397 1"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/icons/facebook_circle_1665351098160.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<path d=\"M28 14C28 6.26719 21.7328 0 14 0C6.26719 0 0 6.26719 0 14C0 21.7328 6.26719 28 14 28C14.082 28 14.1641 28 14.2461 27.9945V17.1008H11.2383V13.5953H14.2461V11.0141C14.2461 8.02266 16.0727 6.39297 18.7414 6.39297C20.0211 6.39297 21.1203 6.48594 21.4375 6.52969V9.65781H19.6C18.1508 9.65781 17.8664 10.3469 17.8664 11.3586V13.5898H21.3391L20.8852 17.0953H17.8664V27.4586C23.718 25.7797 28 20.393 28 "
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/icons/youtube_circle_1665351098160.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g id=\"youtube (1)\">\n<path id=\"Path\" d=\"M12.2561 16.6229L16.8101 14.0001L12.2561 11.3772L12.2561 16.6229Z\" fill=\"#666666\"/>\n<path id=\"Shape\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0 14C0 6.2692 6.2692 0 14 0C21.7308 0 28 6.2692 28 14C28 21.7308 21.7308 28 14 28C6.2692 28 0 21.7308 0 14ZM22.3877 18.2227C22.7479 16.8536 22.7479 14.0143 22.7479 14.0143C22.7479 14.0143 22.7624 11.1609 22.3877 9.79184"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/icons/twitter_1708360346779.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_2343_21504)\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M27.999 14C27.999 21.732 21.731 28 13.999 28C6.26704 28 -0.000976562 21.732 -0.000976562 14C-0.000976562 6.26801 6.26704 0 13.999 0C21.731 0 27.999 6.26801 27.999 14ZM12.067 14.8341L5.37518 5.88672H10.5327L14.9198 11.7525L20.3493 5.88672H21.8649L15.5969 12.6582L22.6654 22.1088H17.5078L12.7444 15.7396L6.84868 22.108"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/nwpBtKy2OAdR1K-IwhWudF-R9QMylBJAV3Bo8Ky462EK9CsYm4fA1Ts_1745309368257.woff2",
+    "status": 200,
+    "body_preview": "FAILED"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/nwpBtKy2OAdR1K-IwhWudF-R9QMylBJAV3Bo8Kxm7GEK9CsYm4fA1Ts_1745309368257.woff2",
+    "status": 200,
+    "body_preview": "FAILED"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/style-product-key-info.style.ffcbf748.css",
+    "status": 200,
+    "body_preview": ".desktop-location-select-modal .initial-modal-content .header .close-button:dir(ltr),.desktop-custom-location-select-modal .initial-modal-content .header .close-button:dir(ltr){margin-left:auto}.desktop-location-select-modal .initial-modal-content .header .close-button:dir(rtl),.desktop-custom-location-select-modal .initial-modal-content .header .close-button:dir(rtl){margin-right:auto}.desktop-location-select-modal .initial-modal-content .content .location-select-buttons .location-item-dropdown"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/style-product-key-info.chunk.9dde7e7e.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"1264\"],{58624(e,u,c){c.r(u)}}]);"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/core-product-detail.chunk.2d948913.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"311\"],{13412(e,t,r){r.d(t,{M:()=>s});var n=r(92427),a=r(93676),l=r(81771),i=r(26097);function o(e,t,r,n,a,l,i){try{var o=e[l](i),c=o.value}catch(e){r(e);return}o.done?t(c):Promise.resolve(c).then(n,a)}var c=l.lazy(()=>{var e;return(e=function(){return function(e,t){var r,n,a,l={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]},i=Object.create((\"function\"==typeof Iterator?Iterator:Obje"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/core-product-actions.chunk.b1051592.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"4731\"],{66736(e,t,n){n.d(t,{CD:()=>v,Hg:()=>s,PB:()=>u,PD:()=>b,V8:()=>f,VL:()=>p,Vz:()=>c,cG:()=>m,sV:()=>h,tw:()=>d});var r,a,o,i,l,u=((r={}).Visitor=\"visitor\",r.Member=\"member\",r),s=((a={})[a.Other=0]=\"Other\",a[a.VisitorOrMember=1]=\"VisitorOrMember\",a),c=((o={})[o.NotMember=0]=\"NotMember\",o[o.Member=1]=\"Member\",o),d=((i={}).Normal=\"Normal Teslimat\",i.Rush=\"Hızlı Teslimat\",i),p=((l={}).Available=\"Available"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/core-product-key-info.chunk.9951c16a.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"8\"],{44420(e,t,r){r.d(t,{E:()=>o,U:()=>l});var n=r(81771),a=r.n(n),i=r(52596),l=a().createContext(i.Uy),o=()=>a().useContext(l)},46335(e,t,r){r.d(t,{AZ:()=>a,TR:()=>i,VK:()=>o,Yz:()=>l,Ze:()=>c});var n,a=\"azerbaycan\",i=\"t\\xfcrkiye\",l=\"available for azerbaycan\",o=((n={}).PRODUCT_KEY_INFO_ERROR_GET_USER_DELIVERY_LOCATION=\"PRODUCT_KEY_INFO_ERROR_GET_USER_DELIVERY_LOCATION\",n.PRODUCT_KEY_INFO_ERROR_GET_DISTRICTS"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/core-product-gallery.chunk.93a1bb7e.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"5714\"],{2202(e,t,r){r.d(t,{n:()=>a});var n,a=((n={}).TOP=\"top\",n.BOTTOM=\"bottom\",n)},89430(e,t,r){r.d(t,{jl:()=>eS,ErrorComponent:()=>eI});var n=r(6354),a=r(81771),o=r.n(a),l=r(93363),i=r.n(l),c=r(82852);let s=e=>{var t=e.position,r=e.size,n=void 0===r?\"md\":r,a=e.isAbsolute,l=e.className,s=e.isFavorited,u=e.toggleFavorite;return o().createElement(\"button\",{className:i()(\"favorite-button-favorite-box\",`favori"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/info-product-info.chunk.13084c70.js",
+    "status": 200,
+    "body_preview": "\"use strict\";(self.webpackChunkproduct_envoy=self.webpackChunkproduct_envoy||[]).push([[\"3751\"],{94197(e,t,r){r.d(t,{H:()=>a});var n=r(81771),a=e=>{(0,n.useEffect)(()=>{var t=window.getComputedStyle(document.body).overflow;return e&&(document.body.style.overflow=\"hidden\"),()=>{document.body.style.overflow=t}},[e])}},86070(e,t,r){r.d(t,{A:()=>i});var n=r(81771),a=r.n(n);let i=e=>{var t=e.placeholderImage,r=e.fragmentName,n=e.style;return a().createElement(\"div\",{\"data-dr-hide\":\"true\",\"data-testid"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/web/production/icomoonpdp_1776169003213.css",
+    "status": 200,
+    "body_preview": "@font-face {\n  font-family: 'icomoonweb';\n  src:  url('https://cdn.dsmcdn.com/web/production/icomoon-1738678454729.eot');\n  src:  url('https://cdn.dsmcdn.com/web/production/icomoon-1738678454729.eot#iefix') format('embedded-opentype'),\n    url('https://cdn.dsmcdn.com/web/production/icomoon-1738678454729.woff2') format('woff2'),\n    url('https://cdn.dsmcdn.com/web/production/icomoon-1738678454729.ttf') format('truetype'),\n    url('https://cdn.dsmcdn.com/web/production/icomoon-1738678454729.woff')"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-checkout-service/api/sidebar-basket/basket/item/count?channelId=1&storefrontId=1&language=tr&countryCode=TR",
+    "status": 200,
+    "body_preview": "{\"isSuccess\":true,\"data\":{\"itemCount\":0,\"selectedItemCount\":0}}"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-storefront-trproductgw-service/other-merchant/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&isMobile=false&storefrontId=1&channelId=1&language=tr&countryC",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__other-merchant__CLIENTSIDE_RENDER\\\"]=true</script><script>window[\\\"__other-merchant__PROPS\\\"]={\\\"condition\\\":true,\\\"storefront\\\":{\\\"id\\\":\\\"1\\\",\\\"code\\\":\\\"TR\\\",\\\"language\\\":\\\"tr\\\",\\\"otherLanguages\\\":[\\\"en\\\",\\\"ar\\\"],\\\"name\\\":\\\"Türkiye\\\",\\\"flag\\\":\\\"https:\\\\u002F\\\\u002Fcdn.dsmcdn.com\\\\u002Fmnresize\\\\u002F300\\\\u002F-\\\\u002Fsfint\\\\u002Fproduction\\\\u002Fflags\\\\u002Ftr.png\\\",\\\"regions\\\":[],\\\"geolocationAutoselectEnabled\\\":true,\\\"currency\\\":\\\"TRY\\\",\\\"currencySymbol\\\":\\\"TL\\\",\\\""
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-storefront-trproductgw-service/similar-products/apple/iphone-15-128-gb-p-782425137?__renderMode=stream&isMobile=false&storefrontId=1&channelId=1&language=tr&countr",
+    "status": 200,
+    "body_preview": "{\"main\":\"<script>window[\\\"__similar-products__CLIENTSIDE_RENDER\\\"]=true</script><script>window[\\\"__similar-products__PROPS\\\"]={\\\"condition\\\":true,\\\"storefront\\\":{\\\"id\\\":\\\"1\\\",\\\"code\\\":\\\"TR\\\",\\\"language\\\":\\\"tr\\\",\\\"otherLanguages\\\":[\\\"en\\\",\\\"ar\\\"],\\\"name\\\":\\\"Türkiye\\\",\\\"flag\\\":\\\"https:\\\\u002F\\\\u002Fcdn.dsmcdn.com\\\\u002Fmnresize\\\\u002F300\\\\u002F-\\\\u002Fsfint\\\\u002Fproduction\\\\u002Fflags\\\\u002Ftr.png\\\",\\\"regions\\\":[],\\\"geolocationAutoselectEnabled\\\":true,\\\"currency\\\":\\\"TRY\\\",\\\"currencySymbol\\\":\\\"TL\\"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/basket-icon_1751630173674.png",
+    "status": 200,
+    "body_preview": "FAILED"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/prod/fp/minimize-icon_1750613944308.svg",
+    "status": 200,
+    "body_preview": "<svg width=\"21\" height=\"16\" viewBox=\"0 0 21 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n<g clip-path=\"url(#clip0_1553_81688)\">\n<path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M18.6899 0.415283C19.5874 0.415283 20.3149 1.14282 20.3149 2.04028V13.9569C20.3149 14.8544 19.5874 15.5819 18.6899 15.5819H2.43994C1.54251 15.5819 0.814943 14.8544 0.814943 13.9569V2.04028C0.814943 1.14282 1.54251 0.415283 2.43994 0.415283H18.6899ZM19.2316 2.04028C19.2316 1.74113 18.9891 1.49862 18.6899 1.49862H14."
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-checkout-service/api/sidebar-basket/sidebar-basket-items?channelId=1&storefrontId=1&language=tr&countryCode=TR",
+    "status": 200,
+    "body_preview": "{\"isSuccess\":true,\"data\":{\"count\":0,\"totalPrice\":0,\"formattedTotalPrice\":\"0\",\"formattedCurrencySymbol\":\"TL\",\"runningOutCount\":0,\"items\":[]}}"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/similar-products.style.b2b20b92.css",
+    "status": 200,
+    "body_preview": "#similar-products .similar-products,[fragment-partial=similar-products] .similar-products{margin-top:24px}#similar-products .similar-products .product-card,[fragment-partial=similar-products] .similar-products .product-card{min-height:356px;padding:0 20px;display:flex;overflow-x:auto;overflow-y:hidden}#similar-products .similar-products .title,[fragment-partial=similar-products] .similar-products .title{margin:0 16px 16px;font-size:16px;font-weight:600;line-height:16px}#similar-products .similar"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/master/similar-products.bundle.11ed96c1.js",
+    "status": 200,
+    "body_preview": "(()=>{var e,t,r,n={1067(e,t,r){\"use strict\";var n=r(197),o=r(729),a={logger:console,timeout:1e4,headers:{Accept:\"application/json\",\"Content-Type\":\"application/json\",\"Accept-Encoding\":\"gzip,deflate\"},client:n,interceptor:function(e,t){return{url:e,options:t}}},i=Object.freeze({GET:\"get\",PUT:\"put\",POST:\"post\",DELETE:\"delete\",HEAD:\"head\"});function c(e){e.client&&(a.client=e.client),\"function\"==typeof e.interceptor&&(a.interceptor=e.interceptor),a.logger=o.get(e,\"logger\",a.logger),a.timeout=o.get(e"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/production/client.7f1de7a56ca9e5783eaa.bundle.js",
+    "status": 200,
+    "body_preview": "!function(t){var e={};function r(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}};return t[i].call(o.exports,o,o.exports,r),o.l=!0,o.exports}r.m=t,r.c=e,r.d=function(t,e,i){r.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:i})},r.r=function(t){\"undefined\"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:\"Module\"}),Object.defineProperty(t,\"__esModule\",{value:!0})},r.t=function(t,e){if(1&e&&(t=r(t)),8&e)return t;if(4&e&&\"object\"==typeof t&&t"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/eye-able/public/css/eyeAble.1.17.17.min.css",
+    "status": 200,
+    "body_preview": ".iAble_column{position:fixed;right:10px;left:unset;z-index:999999999;border-radius:10px;user-select:none;scrollbar-color:white black;scrollbar-width:thin}.eyeAbletooltip{display:flex;margin:10px;margin-top:0;padding:5px;font-size:14px;font-weight:var(--font-weight-text);cursor:pointer}.iAble_column:not(.animeEyeAbleExtended)[accessFocus]{box-shadow:white 0 0 20px 4px}#hideForMeID{font-size:14px;margin-bottom:2px;padding-top:0}.iAble_column:not(.animeEyeAbleExtended)[accessFocus]>div>.eyeAble_mai"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/eye-able/public/images/eye-able_whitelabel-icon_2.svg",
+    "status": 200,
+    "body_preview": "<svg id=\"Ebene_1\" data-name=\"Ebene 1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"\r\n     viewBox=\"0 0 389.9 389.6\" preserveAspectRatio=\"none\">\r\n    <defs>\r\n        <style>\r\n            .cls-1{fill:url(#Unbenannter_Verlauf);}.cls-2{fill:#fff;}.cls-3{fill:url(#Unbenannter_Verlauf_2);}.cls-4{fill:url(#Unbenannter_Verlauf_3);}\r\n        </style>\r\n        <linearGradient id=\"Unbenannter_Verlauf\" x1=\"253.85\" y1=\"403.59\" x2=\"253.85\" y2=\"820.38\"\r\n                        g"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/eye-able/public/images/eye-able-active-check.svg",
+    "status": 200,
+    "body_preview": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n\n<svg\n   version=\"1.1\"\n   id=\"Layer_1\"\n   x=\"0px\"\n   y=\"0px\"\n   viewBox=\"0 0 512 512\"\n   style=\"enable-background:new 0 0 512 512;\"\n   xml:space=\"preserve\"\n   sodipodi:docname=\"eye-able-active-check.svg\"\n   inkscape:version=\"1.1.1 (3bf5ae0d25, 2021-09-20)\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   xmlns:sodipodi=\"http://sod"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/sfint/production/eye-able/public/lang/eyeAble_lang_tr.js",
+    "status": 200,
+    "body_preview": "const eyeAble_tr = {\n    \"contrastExtended\": {\n        \"message\": \"Daha çok renk.\"\n    },\n    \"man2Focus\": {\n        \"message\": \"Başlamak için odağı sıfırlayın\"\n    },\n    \"tipContrastBox\": {\n        \"message\": \"En iyi kontrast renklerinizi seçin.\"\n    },\n    \"contrastBoxText\": {\n        \"message\": \"Kendi renklerini seç\"\n    },\n    \"man2FocusTxt\": {\n        \"message\": \"Odağı tekrar okuma penceresine ve sayfanın en üstüne ayarlar.\"\n    },\n    \"popUpSmaller\": {\n        \"message\": \"Uzaklaştır (-)\"\n"
+  },
+  {
+    "url": "https://cdn.dsmcdn.com/mweb/production/dom-event-tracker.min.js?v=10102019_2",
+    "status": 200,
+    "body_preview": "!function(e){var t={};function n(r){if(t[r])return t[r].exports;var i=t[r]={i:r,l:!1,exports:{}};return e[r].call(i.exports,i,i.exports,n),i.l=!0,i.exports}n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){\"undefined\"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:\"Module\"}),Object.defineProperty(e,\"__esModule\",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&\"object\"==typeof e&&e"
+  },
+  {
+    "url": "https://apigw.trendyol.com/discovery-sfint-productgw-service/api/productDetail/782425137",
+    "status": 556,
+    "body_preview": "{\"message\":\"Service Unavailable\"}"
+  },
+  {
+    "url": "https://www.trendyol.com/api/productDetail/782425137",
+    "status": 404,
+    "body_preview": "\n<html><head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1, user-scalable=no\">\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n  <meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\">\n  <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\">\n  <meta http-equiv=\"Pragma\" content=\"no-cache\">\n  <meta http-equiv=\"Expires\" content=\"0\">\n  <link rel=\"shortcut icon\" h"
+  },
+  {
+    "source": "page_fetch",
+    "results": [
+      {
+        "url": "/api/productDetail/782425137",
+        "status": 404,
+        "body": "\n<html><head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1, user-scalable=no\">\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n  <meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\">\n "
+      },
+      {
+        "url": "https://public.trendyol.com/discovery-sfint-productgw-service/api/productDetail/782425137",
+        "error": "Failed to fetch"
+      }
+    ]
+  }
+]

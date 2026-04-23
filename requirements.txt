@@ -1,0 +1,19 @@
+# ===== Web Scraping (Anti-Bot) =====
+playwright==1.52.0
+playwright-stealth==1.0.6
+
+# ===== Web Framework =====
+flask==3.1.1
+Jinja2>=3.1
+
+# ===== Scheduler =====
+APScheduler==3.11.0
+
+# ===== Telegram Bot =====
+python-telegram-bot==21.11
+
+# ===== Email =====
+# (smtplib ve email standart kütüphanede, ek paket gerekmez)
+
+# ===== Utilities =====
+python-dotenv==1.1.0

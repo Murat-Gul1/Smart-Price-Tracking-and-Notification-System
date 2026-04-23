@@ -1,0 +1,17 @@
+[
+  {
+    "status": "OK",
+    "data": {
+      "title": "Apple Iphone 15 128 Gb",
+      "brand": null,
+      "price": null,
+      "currency": "TRY",
+      "image_url": null,
+      "in_stock": true,
+      "rating": null,
+      "url": "https://www.trendyol.com/apple/iphone-15-128-gb-p-782425137",
+      "platform": "trendyol",
+      "scraped_at": "2026-04-23T00:33:53.275556+00:00"
+    }
+  }
+]

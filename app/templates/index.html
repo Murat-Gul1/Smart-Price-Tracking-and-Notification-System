@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trendyol ve Amazon ürünlerini takip edin. Fiyat düşünce anında bildirim alın.">
+    <title>Smart Price Tracker — Akıllı Fiyat Takip</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ═══ Header ═══ -->
+        <header class="header">
+            <span class="header__icon">🛒</span>
+            <h1 class="header__title">Smart Price Tracker</h1>
+            <p class="header__subtitle">Trendyol & Amazon fiyatlarını takip edin, düşünce haberdar olun.</p>
+            <div class="header__stats">
+                <div class="stat-badge">
+                    📦 Takip Edilen: <span class="stat-badge__value">{{ product_count }}</span>
+                </div>
+                <div class="stat-badge">
+                    ⏰ Kontrol: <span class="stat-badge__value">Her 6 Saatte</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══ Flash Messages ═══ -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash flash--{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- ═══ Ürün Ekleme Formu ═══ -->
+        <section class="add-form" id="add-product-form">
+            <h2 class="add-form__title">➕ Yeni Ürün Takibe Al</h2>
+            <form method="POST" action="{{ url_for('add_product') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-url">Ürün URL'si</label>
+                        <input
+                            type="url"
+                            id="product-url"
+                            name="url"
+                            class="form-input"
+                            placeholder="https://www.trendyol.com/... veya https://www.amazon.com.tr/..."
+                            required
+                        >
+                    </div>
+                    <div class="form-group form-group--small">
+                        <label for="target-price">Hedef Fiyat (₺)</label>
+                        <input
+                            type="text"
+                            id="target-price"
+                            name="target_price"
+                            class="form-input"
+                            placeholder="Opsiyonel"
+                        >
+                    </div>
+                    <div class="form-group form-group--small" style="display:flex; align-items:flex-end;">
+                        <button type="submit" class="btn btn--primary" id="btn-add-product">
+                            🔍 Takibe Al
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- ═══ Toolbar ═══ -->
+        <div class="toolbar">
+            <h2 class="toolbar__title">📋 Takip Listesi</h2>
+            {% if product_count > 0 %}
+            <form method="POST" action="{{ url_for('manual_check') }}">
+                <button type="submit" class="btn btn--secondary" id="btn-manual-check">
+                    🔄 Manuel Kontrol
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- ═══ Ürün Listesi ═══ -->
+        {% if products %}
+        <div class="product-grid">
+            {% for pid, product in products.items() %}
+            <div class="product-card" id="product-{{ pid }}">
+                <div class="product-card__inner">
+
+                    <!-- Görsel -->
+                    <div class="product-card__image">
+                        {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy">
+                        {% else %}
+                        <span class="product-card__image--placeholder">📦</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- İçerik -->
+                    <div class="product-card__content">
+                        <!-- Platform Badge -->
+                        <span class="product-card__platform platform--{{ product.platform }}">
+                            {% if product.platform == 'trendyol' %}🟠 Trendyol
+                            {% elif product.platform == 'amazon' %}🟡 Amazon
+                            {% else %}{{ product.platform }}
+                            {% endif %}
+                        </span>
+
+                        <!-- Başlık -->
+                        <h3 class="product-card__title">
+                            <a href="{{ product.url }}" target="_blank" rel="noopener">
+                                {{ product.title }}
+                            </a>
+                        </h3>
+
+                        <!-- Fiyat -->
+                        <div class="product-card__price-row">
+                            {% if product.current_price %}
+                            <span class="product-card__price">{{ "%.2f"|format(product.current_price) }}</span>
+                            <span class="product-card__currency">{{ product.currency }}</span>
+                            {% else %}
+                            <span class="product-card__price" style="color:var(--text-muted);">Fiyat alınamadı</span>
+                            {% endif %}
+
+                            {% if product.target_price %}
+                            <span class="product-card__target">
+                                🎯 Hedef: <strong>{{ "%.2f"|format(product.target_price) }} {{ product.currency }}</strong>
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Meta -->
+                        <div class="product-card__meta">
+                            {% if product.in_stock %}
+                            <span class="stock--in">✅ Stokta</span>
+                            {% else %}
+                            <span class="stock--out">❌ Tükendi</span>
+                            {% endif %}
+
+                            {% if product.last_checked %}
+                            <span>🕐 Son kontrol: {{ product.last_checked[:16].replace('T', ' ') }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- İstatistikler -->
+                        {% if product.stats and product.stats.count > 0 %}
+                        <div class="product-card__stats">
+                            <span>📉 Min: <strong>{{ "%.2f"|format(product.stats.min) }}₺</strong></span>
+                            <span>📈 Max: <strong>{{ "%.2f"|format(product.stats.max) }}₺</strong></span>
+                            <span>📊 Ort: <strong>{{ "%.2f"|format(product.stats.avg) }}₺</strong></span>
+                            <span>🔢 {{ product.stats.count }} kayıt</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Aksiyonlar -->
+                    <div class="product-card__actions">
+                        <!-- Hedef Fiyat Güncelle -->
+                        <form class="target-form" method="POST" action="{{ url_for('update_target', product_id=pid) }}">
+                            <input
+                                type="text"
+                                name="target_price"
+                                class="form-input"
+                                placeholder="Hedef ₺"
+                                value="{{ product.target_price or '' }}"
+                            >
+                            <button type="submit" class="btn btn--success" title="Hedef güncelle">🎯</button>
+                        </form>
+
+                        <!-- Sil -->
+                        <form method="POST" action="{{ url_for('remove_product', product_id=pid) }}"
+                              onsubmit="return confirm('Bu ürünü takipten çıkarmak istediğinize emin misiniz?');">
+                            <button type="submit" class="btn btn--danger" id="btn-remove-{{ pid }}">
+                                🗑️ Çıkar
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- ═══ Boş Durum ═══ -->
+        <div class="empty-state">
+            <div class="empty-state__icon">🔍</div>
+            <h3 class="empty-state__title">Henüz takip edilen ürün yok</h3>
+            <p class="empty-state__desc">
+                Yukarıdaki form ile Trendyol veya Amazon.com.tr ürün linkini yapıştırarak
+                fiyat takibine başlayın.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- ═══ Footer ═══ -->
+        <footer class="footer">
+            <p>Smart Price Tracker v1.0 — Playwright + Stealth ile güvenli fiyat takibi 🔒</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Flash mesajlarını 5 saniye sonra otomatik kapat
+        document.querySelectorAll('.flash').forEach(el => {
+            setTimeout(() => {
+                el.style.transition = 'opacity 0.5s ease';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

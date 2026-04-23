@@ -1,0 +1,22 @@
+============================================================
+TRENDYOL SELECTOR DEBUG
+============================================================
+  NO  h1: NOT FOUND
+  NO  h1.pr-new-br: NOT FOUND
+  NO  h1.pr-new-br span: NOT FOUND
+  NO  .pr-in-cn h1: NOT FOUND
+  NO  span.prc-dsc: NOT FOUND
+  NO  span.prc-slg: NOT FOUND
+  NO  span.prc-org: NOT FOUND
+  NO  [class*=prc]: NOT FOUND
+  NO  [class*=price]: NOT FOUND
+  NO  div.pr-bx-w: NOT FOUND
+  NO  img.detail-section-img: NOT FOUND
+  NO  div.gallery-container img: NOT FOUND
+  NO  [class*=gallery] img: NOT FOUND
+  YES img[src*=trendyol]: [5] -> "(empty text)" | src=https://cdn.cookielaw.org/logos/6ed1dcd2-1227-4238-998b-79e46dce1687/8e76a328-1a
+  NO  .pr-img-s img: NOT FOUND
+  NO  button.add-to-basket: NOT FOUND
+  NO  [class*=add-to]: NOT FOUND
+
+Page title: Apple Iphone 15 128 Gb Fiyatı, Yorumları - Trendyol
