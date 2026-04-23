@@ -23,11 +23,11 @@ from playwright.async_api import async_playwright
 from playwright_stealth.stealth import Stealth
 
 
-# ═══════════════════════════════════════════════════════════
+# =============================================================
 #  USER-AGENT HAVUZU
-#  Her çalıştırmada buradan rastgele biri seçilir.
-#  Gerçek Chrome/Firefox/Edge sürümleriyle güncel tutun.
-# ═══════════════════════════════════════════════════════════
+#  Her calistirmada buradan rastgele biri secilir.
+#  Gercek Chrome/Firefox/Edge surumleriyle guncel tutun.
+# =============================================================
 USER_AGENTS = [
     # Windows 10/11 — Chrome
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
@@ -49,11 +49,11 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
 ]
 
-# ═══════════════════════════════════════════════════════════
+# =============================================================
 #  VIEWPORT (EKRAN) BOYUTLARI HAVUZU
-#  Gerçek masaüstü çözünürlükleri — her çalıştırmada
-#  rastgele biri seçilir; bot profilinden kaçınır.
-# ═══════════════════════════════════════════════════════════
+#  Gercek masaustu cozunurlukleri -- her calistirmada
+#  rastgele biri secilir; bot profilinden kacinir.
+# =============================================================
 VIEWPORT_BOYUTLARI = [
     {"width": 1920, "height": 1080},   # Full HD (en yaygın)
     {"width": 1920, "height": 1200},   # Full HD geniş
@@ -68,9 +68,9 @@ VIEWPORT_BOYUTLARI = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════
-#  CSS SEÇİCİLERİ (Hedef siteye göre güncelleyin)
-# ═══════════════════════════════════════════════════════════
+# =============================================================
+#  CSS SECICILERI (Hedef siteye gore guncelleyin)
+# =============================================================
 # Her seçici bir liste olarak tanımlanmıştır.
 # Fonksiyon bu listeyi sırayla dener, ilk eşleşeni kullanır.
 # Böylece birden fazla site/layout için esneklik sağlanır.
@@ -108,9 +108,9 @@ GORSEL_SECICILERI = [
 ]
 
 
-# ═══════════════════════════════════════════════════════════
-#  ANA FONKSİYON
-# ═══════════════════════════════════════════════════════════
+# =============================================================
+#  ANA FONKSIYON
+# =============================================================
 
 async def fiyat_getir(url: str) -> Dict[str, Any]:
     """
@@ -143,15 +143,15 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
     try:
         async with async_playwright() as p:
 
-            # ── 1. Headless Chromium tarayıcıyı başlat ────────────
+            # -- 1. Headless Chromium tarayiciyi baslat ------------
 
             # Her çalıştırmada farklı UA ve viewport seç
             secilen_ua       = random.choice(USER_AGENTS)
             secilen_viewport = random.choice(VIEWPORT_BOYUTLARI)
             w, h = secilen_viewport["width"], secilen_viewport["height"]
 
-            print(f"🕵️  Seçilen User-Agent : {secilen_ua[:60]}...")
-            print(f"🖥️  Seçilen Viewport   : {w}x{h}")
+            print(f"UA: {secilen_ua[:60]}...")
+            print(f"Viewport: {w}x{h}")
 
             browser = await p.chromium.launch(
                 headless=True,
@@ -192,11 +192,11 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
 
             page = await context.new_page()
 
-            # ── 2. playwright-stealth eklentisini entegre et ──────
+            # -- 2. playwright-stealth eklentisini entegre et ------
             stealth = Stealth()
             await stealth.apply_stealth_async(page)
 
-            # ── 3. Ek JavaScript anti-detection önlemleri ──────────
+            # -- 3. Ek JavaScript anti-detection onlemleri ----------
             # Bu script sayfa yüklenmeden önce enjekte edilir.
             await page.add_init_script("""
                 // WebDriver özelliğini gizle (en temel bot tespiti)
@@ -240,17 +240,17 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
                 });
             """);
 
-            print(f"🌐 Siteye gidiliyor: {url}")
+            print(f"Siteye gidiliyor: {url}")
 
             # Sayfaya git (DOM içeriği yüklenene kadar bekle)
             await page.goto(url, wait_until="domcontentloaded", timeout=45_000)
 
-            # ── 3. Rastgele 2–5 saniye bekle (insan simülasyonu) ──
+            # -- 3. Rastgele 2-5 saniye bekle (insan simulasyonu) --
             bekleme_suresi = random.uniform(2.0, 5.0)
-            print(f"⏳ Sayfa yüklendi, {bekleme_suresi:.2f} saniye bekleniyor...")
+            print(f"Sayfa yuklendi, {bekleme_suresi:.2f} saniye bekleniyor...")
             await asyncio.sleep(bekleme_suresi)
 
-            # ── 4. Fiyatı bul ─────────────────────────────────────
+            # -- 4. Fiyati bul -------------------------------------
             try:
                 for secici in FIYAT_SECICILERI:
                     fiyat_elementi = await page.query_selector(secici)
@@ -258,7 +258,7 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
                         fiyat_metni = await fiyat_elementi.inner_text()
                         if fiyat_metni and fiyat_metni.strip():
                             sonuc["fiyat"] = fiyat_metni.strip()
-                            print(f"✅ Fiyat bulundu: {sonuc['fiyat']}")
+                            print(f"Fiyat bulundu: {sonuc['fiyat']}")
                             break
                 else:
                     # Hiçbir seçici eşleşmedi — wait_for_selector ile son deneme
@@ -271,17 +271,17 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
                             metin = await fiyat_el.inner_text()
                             if metin and metin.strip():
                                 sonuc["fiyat"] = metin.strip()
-                                print(f"✅ Fiyat bulundu (bekleme sonrası): {sonuc['fiyat']}")
+                                print(f"Fiyat bulundu (bekleme sonrasi): {sonuc['fiyat']}")
                     except Exception:
                         pass  # Zaman aşımı — varsayılan mesaj kalır
 
                 if sonuc["fiyat"] == "Fiyat bulunamadı":
-                    print("⚠️  Fiyat alınamadı: Hiçbir CSS seçici eşleşmedi.")
+                    print("Fiyat alinamadi: Hicbir CSS secici eslesmedi.")
 
             except Exception as fiyat_hatasi:
-                print(f"⚠️  Fiyat alınırken hata oluştu: {fiyat_hatasi}")
+                print(f"Fiyat alinirken hata olustu: {fiyat_hatasi}")
 
-            # ── 5. Ürün görselinin URL'sini bul ───────────────────
+            # -- 5. Urun gorselinin URL'sini bul -------------------
             try:
                 for secici in GORSEL_SECICILERI:
                     gorsel_elementi = await page.query_selector(secici)
@@ -293,7 +293,7 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
                         )
                         if gorsel_src and gorsel_src.startswith("http"):
                             sonuc["gorsel_url"] = gorsel_src
-                            print(f"✅ Görsel URL bulundu: {sonuc['gorsel_url'][:80]}...")
+                            print(f"Gorsel URL bulundu: {sonuc['gorsel_url'][:80]}...")
                             break
 
                 if sonuc["gorsel_url"] == "Görsel bulunamadı":
@@ -304,15 +304,15 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
                         )
                         if og_image:
                             sonuc["gorsel_url"] = og_image
-                            print(f"✅ Görsel URL (og:image) bulundu: {og_image[:80]}...")
+                            print(f"Gorsel URL (og:image) bulundu: {og_image[:80]}...")
                     except Exception:
                         pass
 
                 if sonuc["gorsel_url"] == "Görsel bulunamadı":
-                    print("⚠️  Görsel alınamadı: Hiçbir CSS seçici eşleşmedi.")
+                    print("Gorsel alinamadi: Hicbir CSS secici eslesmedi.")
 
             except Exception as gorsel_hatasi:
-                print(f"⚠️  Görsel alınırken hata oluştu: {gorsel_hatasi}")
+                print(f"Gorsel alinirken hata olustu: {gorsel_hatasi}")
 
             # Tarayıcıyı kapat
             await browser.close()
@@ -320,7 +320,7 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
 
     except Exception as genel_hata:
         hata_mesaji = f"Genel hata oluştu: {genel_hata}"
-        print(f"❌ {hata_mesaji}")
+        print(f"Hata: {hata_mesaji}")
         sonuc["hata"] = hata_mesaji
 
     finally:
@@ -334,27 +334,27 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
     return sonuc
 
 
-# ═══════════════════════════════════════════════════════════
-#  ÖRNEK KULLANIM TESTİ
-# ═══════════════════════════════════════════════════════════
+# =============================================================
+#  ORNEK KULLANIM TESTI
+# =============================================================
 
 if __name__ == "__main__":
 
     async def test():
         test_url = "https://www.trendyol.com/apple/iphone-15-128-gb-p-782425137"
         print("=" * 60)
-        print("🛒  fiyat_getir() Test Başlatılıyor...")
+        print("fiyat_getir() Test Baslatiliyor...")
         print("=" * 60)
 
         data = await fiyat_getir(test_url)
 
-        print("\n" + "─" * 40)
-        print("📦 SONUÇ:")
-        print("─" * 40)
-        print(f"  💰 Fiyat      : {data['fiyat']}")
-        print(f"  🖼️  Görsel URL : {data['gorsel_url']}")
+        print("-" * 40)
+        print("SONUC:")
+        print("-" * 40)
+        print(f"  Fiyat      : {data['fiyat']}")
+        print(f"  Gorsel URL : {data['gorsel_url']}")
         if data["hata"]:
-            print(f"  ❌ Hata       : {data['hata']}")
-        print("─" * 40)
+            print(f"  Hata       : {data['hata']}")
+        print("-" * 40)
 
     asyncio.run(test())
