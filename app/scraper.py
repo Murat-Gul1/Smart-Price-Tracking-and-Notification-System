@@ -486,6 +486,73 @@ class TrendyolScraper(StealthScraper):
             "rating": None,
         }
 
+    async def search_products(self, page: Page, query: str) -> list[dict]:
+        """Trendyol arama sonuçlarından top 3 ürün çeker."""
+        from urllib.parse import quote_plus
+
+        search_url = f"https://www.trendyol.com/sr?q={quote_plus(query)}"
+        results = []
+
+        try:
+            # networkidle ile tam yüklenmeyi bekle (Cloudflare challenge geçmek için)
+            await page.goto(search_url, wait_until="networkidle", timeout=45000)
+            await self._human_delay(2.0, 4.0)
+            await self._scroll_page(page)
+            await self._human_delay(1.0, 2.0)
+
+            # Cloudflare / bot-detection kontrolü
+            title_check = await page.title()
+            if "attention required" in title_check.lower() or "cloudflare" in title_check.lower():
+                logger.warning("[trendyol] Cloudflare engeli tespit edildi.")
+                return results
+
+            # Trendyol'da ürün kartı = a[data-testid=product-card] (kart kendisi bir link)
+            cards = await page.query_selector_all("a[data-testid=product-card]")
+            logger.info(f"[trendyol] {len(cards)} ürün kartı bulundu.")
+
+            for card in cards[:3]:
+                try:
+                    # Link — kartın kendi href'i
+                    href = await card.get_attribute("href") or ""
+                    url = href if href.startswith("http") else f"https://www.trendyol.com{href}"
+
+                    # Başlık
+                    title_el = await card.query_selector(".product-name, [class*=product-name]")
+                    title = (await title_el.inner_text()).strip() if title_el else ""
+
+                    # Fiyat — .single-price (gerçek satış fiyatı)
+                    price_el = await card.query_selector(".single-price, [class*=single-price]")
+                    if not price_el:
+                        price_el = await card.query_selector(".price-section, [class*=price-section]")
+                    price_text = (await price_el.inner_text()).strip() if price_el else ""
+                    price = self._parse_price_text(price_text)
+
+                    # Görsel
+                    img_el = await card.query_selector("img[data-testid=image-img], img")
+                    image_url = None
+                    if img_el:
+                        src = await img_el.get_attribute("src")
+                        if src and src.startswith("http"):
+                            image_url = src
+
+                    if title:
+                        results.append({
+                            "title": title,
+                            "price": price,
+                            "currency": "TRY",
+                            "url": url,
+                            "image_url": image_url,
+                            "platform": self.PLATFORM,
+                            "in_stock": True,
+                        })
+                except Exception as e:
+                    logger.debug(f"[trendyol] Kart parse hatası: {e}")
+                    continue
+        except Exception as e:
+            logger.error(f"[trendyol] Arama hatası: {e}")
+
+        return results
+
     @staticmethod
     def _parse_price_text(text: str) -> Optional[float]:
         """Fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
@@ -643,6 +710,86 @@ class AmazonScraper(StealthScraper):
             return None
         return None
 
+    async def search_products(self, page: Page, query: str) -> list[dict]:
+        """Amazon arama sonuçlarından top 3 ürün çeker."""
+        from urllib.parse import quote_plus
+
+        search_url = f"https://www.amazon.com.tr/s?k={quote_plus(query)}"
+        results = []
+
+        try:
+            await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+            await self._human_delay(2.0, 3.0)
+            await self._scroll_page(page)
+            await self._human_delay(1.0, 2.0)
+
+            # CAPTCHA kontrolü
+            if await self._check_captcha(page):
+                logger.warning("[amazon] Arama sayfasında CAPTCHA tespit edildi.")
+                return results
+
+            # Ürün kartlarını seç
+            card_selectors = [
+                "[data-component-type='s-search-result']",
+                ".s-result-item[data-asin]",
+            ]
+            cards = []
+            for selector in card_selectors:
+                cards = await page.query_selector_all(selector)
+                # Gerçek ürün kartlarını filtrele (reklam olmayan, ASIN'i olan)
+                cards = [c for c in cards if await c.get_attribute("data-asin")]
+                if cards:
+                    break
+
+            for card in cards[:3]:
+                try:
+                    # Başlık
+                    title_el = await card.query_selector("h2 a span, .a-size-medium, .a-size-base-plus")
+                    title = (await title_el.inner_text()).strip() if title_el else ""
+
+                    # Fiyat
+                    price = None
+                    price_el = await card.query_selector(".a-offscreen")
+                    if price_el:
+                        price_text = await price_el.inner_text()
+                        price = self._parse_price_text(price_text.strip())
+                    if price is None:
+                        whole_el = await card.query_selector(".a-price-whole")
+                        if whole_el:
+                            whole_text = (await whole_el.inner_text()).strip()
+                            price = self._parse_price_text(whole_text)
+
+                    # Link
+                    link_el = await card.query_selector("h2 a[href]")
+                    href = await link_el.get_attribute("href") if link_el else ""
+                    url = href if href.startswith("http") else f"https://www.amazon.com.tr{href}"
+
+                    # Görsel
+                    img_el = await card.query_selector(".s-image, img")
+                    image_url = None
+                    if img_el:
+                        src = await img_el.get_attribute("src")
+                        if src and src.startswith("http"):
+                            image_url = src
+
+                    if title:
+                        results.append({
+                            "title": title,
+                            "price": price,
+                            "currency": "TRY",
+                            "url": url,
+                            "image_url": image_url,
+                            "platform": self.PLATFORM,
+                            "in_stock": True,
+                        })
+                except Exception as e:
+                    logger.debug(f"[amazon] Kart parse hatası: {e}")
+                    continue
+        except Exception as e:
+            logger.error(f"[amazon] Arama hatası: {e}")
+
+        return results
+
     @staticmethod
     def _parse_price_text(text: str) -> Optional[float]:
         """Amazon fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
@@ -670,6 +817,184 @@ class AmazonScraper(StealthScraper):
 
 
 # ══════════════════════════════════════════════════════════
+#  Hepsiburada Scraper
+# ══════════════════════════════════════════════════════════
+class HepsiburadaScraper(StealthScraper):
+    """Hepsiburada.com için özelleştirilmiş scraper."""
+
+    PLATFORM = "hepsiburada"
+
+    SELECTORS = {
+        "title": "h1[data-bind*='name'], [data-test-id='title'], h1.product-name",
+        "price": "[data-bind*='finalPrice'], span[class*='price-value'], [data-test-id='price-current-price']",
+        "image": "img[data-bind*='src'], .product-image img, [data-test-id='product-image'] img",
+        "in_stock": "[data-test-id='add-to-cart'], #addToCart",
+        "search_cards": "li[data-bind*='product'], [data-test-id='product-card'], .product-list-item",
+    }
+
+    async def parse_product(self, page: Page) -> dict:
+        """Hepsiburada ürün detay sayfasını parse eder."""
+
+        # CAPTCHA / bot-detection kontrolü
+        if await self._check_captcha(page):
+            logger.warning("[hepsiburada] CAPTCHA tespit edildi, boş sonuç dönülüyor.")
+            return {
+                "title": "",
+                "price": None,
+                "currency": "TRY",
+                "image_url": None,
+                "in_stock": False,
+                "rating": None,
+                "error": "captcha",
+            }
+
+        title = await self._get_text(page, self.SELECTORS["title"])
+        price = await self._extract_price(page)
+        image_url = await self._get_image_url(page)
+        in_stock = await self._check_stock(page)
+
+        return {
+            "title": title or "Başlık bulunamadı",
+            "price": price,
+            "currency": "TRY",
+            "image_url": image_url,
+            "in_stock": in_stock,
+            "rating": None,
+        }
+
+    async def search_products(self, page: Page, query: str) -> list[dict]:
+        """Hepsiburada arama sonuçlarından top 3 ürün çeker."""
+        from urllib.parse import quote_plus
+
+        search_url = f"https://www.hepsiburada.com/ara?q={quote_plus(query)}"
+        results = []
+
+        try:
+            await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+            await self._human_delay(3.0, 5.0)
+            await self._scroll_page(page)
+            await self._human_delay(1.0, 2.0)
+
+            # Bot-detection / güvenlik sayfası kontrolü
+            title_check = await page.title()
+            if "güvenlik" in title_check.lower() or "security" in title_check.lower():
+                logger.warning("[hepsiburada] Güvenlik sayfası tespit edildi.")
+                return results
+
+            # Güncel selektörler (2025 Hepsiburada HTML yapısı)
+            # article[class*=productCard-module_article] veya li[class*=productListContent]
+            cards = await page.query_selector_all("article[class*=productCard-module_article]")
+            if not cards:
+                cards = await page.query_selector_all("li[class*=productListContent]")
+            logger.info(f"[hepsiburada] {len(cards)} ürün kartı bulundu.")
+
+            for card in cards[:3]:
+                try:
+                    # Başlık — h2 elementi
+                    title_el = await card.query_selector("h2, h3, [class*=productName]")
+                    title = (await title_el.inner_text()).strip() if title_el else ""
+
+                    # Fiyat — price-module_finalPrice
+                    price_el = await card.query_selector(
+                        "[class*=price-module_finalPrice], [class*=finalPrice], [class*=priceInfo]"
+                    )
+                    if not price_el:
+                        price_el = await card.query_selector("[class*=price]")
+                    price_text = (await price_el.inner_text()).strip() if price_el else ""
+                    price = self._parse_price_text(price_text)
+
+                    # Link
+                    link_el = await card.query_selector("a[href]")
+                    href = await link_el.get_attribute("href") if link_el else ""
+                    url = href if href.startswith("http") else f"https://www.hepsiburada.com{href}"
+
+                    # Görsel
+                    img_el = await card.query_selector("img")
+                    image_url = None
+                    if img_el:
+                        src = await img_el.get_attribute("src")
+                        if src and src.startswith("http"):
+                            image_url = src
+
+                    if title:
+                        results.append({
+                            "title": title,
+                            "price": price,
+                            "currency": "TRY",
+                            "url": url,
+                            "image_url": image_url,
+                            "platform": self.PLATFORM,
+                            "in_stock": True,
+                        })
+                except Exception as e:
+                    logger.debug(f"[hepsiburada] Kart parse hatası: {e}")
+                    continue
+        except Exception as e:
+            logger.error(f"[hepsiburada] Arama hatası: {e}")
+
+        return results
+
+    async def _check_captcha(self, page: Page) -> bool:
+        """CAPTCHA sayfası kontrolü."""
+        try:
+            url = page.url
+            return "captcha" in url.lower() or "robot" in url.lower()
+        except Exception:
+            return False
+
+    async def _extract_price(self, page: Page) -> Optional[float]:
+        """Hepsiburada fiyat bilgisini çeker."""
+        price_text = await self._get_text(page, self.SELECTORS["price"])
+        if price_text:
+            return self._parse_price_text(price_text)
+        return None
+
+    async def _get_image_url(self, page: Page) -> Optional[str]:
+        """Ürün görsel URL'sini çeker."""
+        try:
+            el = await page.query_selector(self.SELECTORS["image"])
+            if el:
+                return await el.get_attribute("src")
+        except Exception:
+            pass
+        return None
+
+    async def _check_stock(self, page: Page) -> bool:
+        """Stok durumunu kontrol eder."""
+        try:
+            btn = await page.query_selector(self.SELECTORS["in_stock"])
+            return btn is not None
+        except Exception:
+            return False
+
+    @staticmethod
+    async def _get_text(page: Page, selector: str) -> Optional[str]:
+        """CSS selektöründen metin çıkarır (virgülle ayrılmış çoklu selektör destekler)."""
+        for sel in selector.split(","):
+            sel = sel.strip()
+            try:
+                el = await page.query_selector(sel)
+                if el:
+                    text = await el.inner_text()
+                    return text.strip() if text else None
+            except Exception:
+                continue
+        return None
+
+    @staticmethod
+    def _parse_price_text(text: str) -> Optional[float]:
+        """Fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
+        if not text:
+            return None
+        cleaned = re.sub(r"[^\d.,]", "", text)
+        cleaned = cleaned.replace(".", "").replace(",", ".")
+        try:
+            return float(cleaned)
+        except ValueError:
+            return None
+
+
+# ══════════════════════════════════════════════════════════
 #  Özel Hata Sınıfı
 # ══════════════════════════════════════════════════════════
 class ScraperError(Exception):
@@ -683,6 +1008,7 @@ class ScraperError(Exception):
 _SCRAPER_MAP = {
     "trendyol": TrendyolScraper,
     "amazon": AmazonScraper,
+    "hepsiburada": HepsiburadaScraper,
 }
 
 
