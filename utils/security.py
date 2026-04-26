@@ -18,6 +18,8 @@ SUPPORTED_DOMAINS = {
     "www.trendyol.com": "trendyol",
     "amazon.com.tr": "amazon",
     "www.amazon.com.tr": "amazon",
+    "hepsiburada.com": "hepsiburada",
+    "www.hepsiburada.com": "hepsiburada",
 }
 
 

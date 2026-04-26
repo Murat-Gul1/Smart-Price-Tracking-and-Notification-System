@@ -6,6 +6,7 @@ Flask Web Arayüzü
 
 import asyncio
 import logging
+from datetime import datetime, timezone
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
@@ -168,5 +169,81 @@ def create_app() -> Flask:
         history = tracker.get_price_history(product_id)
         stats = tracker.get_price_stats(product_id)
         return jsonify({"history": history, "stats": stats})
+
+    # ── Karşılaştırma Sayfası ─────────────────────────
+
+    @app.route("/compare")
+    def compare():
+        """Ürün karşılaştırma sayfası."""
+        return render_template("compare.html")
+
+    # ── Karşılaştırma Arama ───────────────────────────
+
+    @app.route("/compare/search", methods=["POST"])
+    def compare_search():
+        """Ürün adıyla tüm platformlarda arama yapar, JSON döndürür."""
+        from app.search_engine import SearchEngine, validate_search_query, _find_lowest_price
+
+        data = request.get_json()
+        query = (data or {}).get("query", "")
+
+        if not validate_search_query(query):
+            return jsonify({"error": "Geçersiz sorgu. Boş veya yalnızca boşluk içeren sorgu gönderilemez."}), 400
+
+        try:
+            engine = SearchEngine()
+            loop = asyncio.new_event_loop()
+            results = loop.run_until_complete(engine.search_all(query))
+            loop.close()
+
+            lowest_price_id = _find_lowest_price(results)
+            searched_at = datetime.now(timezone.utc).isoformat()
+
+            return jsonify({
+                "results": results,
+                "lowest_price_id": lowest_price_id,
+                "query": query,
+                "searched_at": searched_at,
+            })
+        except Exception as e:
+            logger.error(f"[compare_search] Arama hatası: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    # ── Karşılaştırmadan Ürün Ekleme ─────────────────
+
+    @app.route("/compare/add", methods=["POST"])
+    def compare_add():
+        """Karşılaştırma sonucundan ürünü takip listesine ekler."""
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "error": "Geçersiz istek gövdesi."}), 400
+
+        product_id = data.get("product_id", "").strip()
+        url = data.get("url", "").strip()
+        title = data.get("title", "")
+        platform = data.get("platform", "")
+        image_url = data.get("image_url", "")
+        price = data.get("price")
+        target_price = data.get("target_price")
+
+        if not product_id or not url:
+            return jsonify({"success": False, "error": "product_id ve url zorunludur."}), 400
+
+        try:
+            tracker = get_tracker()
+            tracker.add_product(
+                product_id=product_id,
+                url=url,
+                title=title,
+                platform=platform,
+                image_url=image_url,
+                target_price=target_price,
+                current_price=price,
+                currency="TRY",
+            )
+            return jsonify({"success": True, "message": f"Ürün takibe alındı: {title[:60]}"})
+        except Exception as e:
+            logger.error(f"[compare_add] Ürün ekleme hatası: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
 
     return app

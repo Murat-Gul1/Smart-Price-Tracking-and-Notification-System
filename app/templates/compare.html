@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trendyol, Amazon ve Hepsiburada ürünlerini karşılaştırın.">
+    <title>Fiyat Karşılaştır — Smart Price Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ═══ Header ═══ -->
+        <header class="header">
+            <span class="header__icon">🔍</span>
+            <h1 class="header__title">Fiyat Karşılaştır</h1>
+            <p class="header__subtitle">Trendyol, Amazon ve Hepsiburada'da aynı anda ara, en iyi fiyatı bul.</p>
+            <div class="header__stats">
+                <a href="{{ url_for('index') }}" class="stat-badge" style="text-decoration:none; color:var(--text-secondary);">
+                    🏠 Ana Sayfa
+                </a>
+            </div>
+        </header>
+
+        <!-- ═══ Arama Formu ═══ -->
+        <section class="compare-search">
+            <form id="compare-form" autocomplete="off">
+                <div class="compare-search__row">
+                    <div class="compare-search__input-wrap">
+                        <span class="compare-search__icon">🔍</span>
+                        <input
+                            type="text"
+                            id="search-query"
+                            name="query"
+                            class="form-input compare-search__input"
+                            placeholder="Ürün adı girin (örn: iPhone 15, Samsung TV...)"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="btn btn--primary compare-search__btn" id="btn-search">
+                        🔍 Ara
+                    </button>
+                </div>
+                <p class="compare-search__hint" id="search-error" style="display:none; color:var(--accent-danger); font-size:13px; margin-top:8px;">
+                    ⚠️ Lütfen bir ürün adı girin.
+                </p>
+            </form>
+        </section>
+
+        <!-- ═══ Karşılaştırma Grid ═══ -->
+        <div class="compare-grid" id="compare-grid">
+
+            <!-- Trendyol Sütunu -->
+            <div class="compare-column" id="col-trendyol">
+                <div class="compare-column__header compare-column__header--trendyol">
+                    <span class="compare-column__logo">🟠</span>
+                    <span class="compare-column__name">Trendyol</span>
+                </div>
+                <div class="compare-column__body" id="results-trendyol">
+                    <div class="compare-empty">
+                        <span class="compare-empty__icon">🛍️</span>
+                        <p>Arama yapın, sonuçlar burada görünecek.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amazon Sütunu -->
+            <div class="compare-column" id="col-amazon">
+                <div class="compare-column__header compare-column__header--amazon">
+                    <span class="compare-column__logo">🟡</span>
+                    <span class="compare-column__name">Amazon</span>
+                </div>
+                <div class="compare-column__body" id="results-amazon">
+                    <div class="compare-empty">
+                        <span class="compare-empty__icon">📦</span>
+                        <p>Arama yapın, sonuçlar burada görünecek.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hepsiburada Sütunu -->
+            <div class="compare-column" id="col-hepsiburada">
+                <div class="compare-column__header compare-column__header--hepsiburada">
+                    <span class="compare-column__logo">🔴</span>
+                    <span class="compare-column__name">Hepsiburada</span>
+                </div>
+                <div class="compare-column__body" id="results-hepsiburada">
+                    <div class="compare-empty">
+                        <span class="compare-empty__icon">🏪</span>
+                        <p>Arama yapın, sonuçlar burada görünecek.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══ Footer ═══ -->
+        <footer class="footer">
+            <p>Smart Price Tracker v1.0 — Playwright + Stealth ile güvenli fiyat takibi 🔒</p>
+        </footer>
+
+    </div>
+
+    <!-- ═══ Takibe Al Modal ═══ -->
+    <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display:none;">
+        <div class="modal">
+            <div class="modal__header">
+                <h2 class="modal__title" id="modal-title">📌 Takibe Al</h2>
+                <button class="modal__close" id="modal-close" aria-label="Kapat">✕</button>
+            </div>
+            <div class="modal__body">
+                <div class="modal__product-info" id="modal-product-info">
+                    <!-- JS tarafından doldurulur -->
+                </div>
+                <div class="form-group" style="margin-top:16px;">
+                    <label for="modal-target-price">Hedef Fiyat (₺) <span style="color:var(--text-muted); font-weight:400;">(opsiyonel)</span></label>
+                    <input
+                        type="text"
+                        id="modal-target-price"
+                        class="form-input"
+                        placeholder="Örn: 1500"
+                    >
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:6px;">
+                        Fiyat bu değerin altına düştüğünde bildirim alırsınız.
+                    </p>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" id="modal-cancel">İptal</button>
+                <button class="btn btn--primary" id="modal-confirm">✅ Takibe Al</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Toast Bildirimi ═══ -->
+    <div class="toast" id="toast" role="alert" aria-live="polite" style="display:none;"></div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        // ── Yardımcı: Toast bildirimi ──────────────────────────────
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast toast--' + (type || 'info');
+            toast.style.display = 'block';
+            setTimeout(function () {
+                toast.style.opacity = '0';
+                setTimeout(function () {
+                    toast.style.display = 'none';
+                    toast.style.opacity = '1';
+                }, 400);
+            }, 3500);
+        }
+
+        // ── Yardımcı: Loading spinner ──────────────────────────────
+        function showLoading(platform) {
+            const el = document.getElementById('results-' + platform);
+            el.innerHTML = '<div class="compare-loading"><div class="compare-loading__spinner"></div><p>Aranıyor...</p></div>';
+        }
+
+        // ── Yardımcı: Fiyat formatla ───────────────────────────────
+        function formatPrice(price, currency) {
+            if (price === null || price === undefined) return '<span style="color:var(--text-muted);">Fiyat yok</span>';
+            return '<span class="compare-card__price-value">' + parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</span> <span class="compare-card__currency">' + (currency || 'TRY') + '</span>';
+        }
+
+        // ── Yardımcı: Kart HTML'i oluştur ─────────────────────────
+        function buildCard(product, isLowest) {
+            const cardClass = 'compare-card' + (isLowest ? ' compare-card--lowest' : '');
+            const imgHtml = product.image_url
+                ? '<img src="' + escapeHtml(product.image_url) + '" alt="' + escapeHtml(product.title) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<span class=\\\"compare-card__img-placeholder\\\">📦</span>\'">'
+                : '<span class="compare-card__img-placeholder">📦</span>';
+
+            const lowestBadge = isLowest ? '<span class="compare-card__badge compare-card__badge--lowest">🏆 En Düşük Fiyat</span>' : '';
+
+            // Encode product data for data attributes
+            const dataTitle = escapeAttr(product.title);
+            const dataUrl = escapeAttr(product.url);
+            const dataPrice = product.price !== null && product.price !== undefined ? product.price : '';
+            const dataCurrency = escapeAttr(product.currency || 'TRY');
+            const dataPlatform = escapeAttr(product.platform);
+            const dataImage = escapeAttr(product.image_url || '');
+            const dataId = escapeAttr(product.id || '');
+
+            return '<div class="' + cardClass + '">' +
+                '<a href="' + escapeAttr(product.url) + '" target="_blank" rel="noopener" class="compare-card__image-link">' +
+                    '<div class="compare-card__image">' + imgHtml + '</div>' +
+                '</a>' +
+                '<div class="compare-card__body">' +
+                    lowestBadge +
+                    '<h3 class="compare-card__title">' +
+                        '<a href="' + escapeAttr(product.url) + '" target="_blank" rel="noopener">' + escapeHtml(product.title) + '</a>' +
+                    '</h3>' +
+                    '<div class="compare-card__price">' + formatPrice(product.price, product.currency) + '</div>' +
+                    '<div class="compare-card__platform-badge platform--' + escapeHtml(product.platform) + '">' + escapeHtml(product.platform) + '</div>' +
+                '</div>' +
+                '<div class="compare-card__footer">' +
+                    '<button class="btn btn--primary compare-card__track-btn" ' +
+                        'data-id="' + dataId + '" ' +
+                        'data-title="' + dataTitle + '" ' +
+                        'data-url="' + dataUrl + '" ' +
+                        'data-price="' + dataPrice + '" ' +
+                        'data-currency="' + dataCurrency + '" ' +
+                        'data-platform="' + dataPlatform + '" ' +
+                        'data-image="' + dataImage + '">' +
+                        '📌 Takibe Al' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+        }
+
+        // ── Yardımcı: HTML escape ──────────────────────────────────
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeAttr(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ── Platform sonuçlarını render et ────────────────────────
+        function renderPlatform(platform, results, lowestId) {
+            const el = document.getElementById('results-' + platform);
+            if (!results || (Array.isArray(results) && results.length === 0)) {
+                el.innerHTML = '<div class="compare-empty"><span class="compare-empty__icon">😔</span><p>Sonuç bulunamadı</p></div>';
+                return;
+            }
+            if (results.error) {
+                el.innerHTML = '<div class="compare-empty compare-empty--error"><span class="compare-empty__icon">⚠️</span><p>' + escapeHtml(results.error) + '</p></div>';
+                return;
+            }
+            const cards = results.map(function (p) {
+                return buildCard(p, p.id === lowestId);
+            }).join('');
+            el.innerHTML = cards;
+        }
+
+        // ── Arama formu submit ─────────────────────────────────────
+        const form = document.getElementById('compare-form');
+        const searchInput = document.getElementById('search-query');
+        const searchError = document.getElementById('search-error');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+
+            // Validasyon: boş veya sadece whitespace
+            if (!query) {
+                searchError.style.display = 'block';
+                searchInput.focus();
+                return;
+            }
+            searchError.style.display = 'none';
+
+            // Loading göster
+            ['trendyol', 'amazon', 'hepsiburada'].forEach(showLoading);
+
+            // Arama isteği
+            fetch('/compare/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            })
+            .then(function (res) {
+                if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
+                return res.json();
+            })
+            .then(function (data) {
+                const results = data.results || {};
+                const lowestId = data.lowest_price_id || null;
+                ['trendyol', 'amazon', 'hepsiburada'].forEach(function (p) {
+                    renderPlatform(p, results[p], lowestId);
+                });
+                // "Takibe Al" butonlarına event listener ekle
+                attachTrackButtons();
+            })
+            .catch(function (err) {
+                ['trendyol', 'amazon', 'hepsiburada'].forEach(function (p) {
+                    const el = document.getElementById('results-' + p);
+                    el.innerHTML = '<div class="compare-empty compare-empty--error"><span class="compare-empty__icon">⚠️</span><p>Arama sırasında hata oluştu.</p></div>';
+                });
+                showToast('Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+            });
+        });
+
+        // ── "Takibe Al" butonlarına event listener ─────────────────
+        function attachTrackButtons() {
+            document.querySelectorAll('.compare-card__track-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    openModal({
+                        id: btn.dataset.id,
+                        title: btn.dataset.title,
+                        url: btn.dataset.url,
+                        price: btn.dataset.price,
+                        currency: btn.dataset.currency,
+                        platform: btn.dataset.platform,
+                        image_url: btn.dataset.image
+                    });
+                });
+            });
+        }
+
+        // ── Modal ──────────────────────────────────────────────────
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalClose = document.getElementById('modal-close');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const modalProductInfo = document.getElementById('modal-product-info');
+        const modalTargetPrice = document.getElementById('modal-target-price');
+
+        let currentProduct = null;
+
+        function openModal(product) {
+            currentProduct = product;
+            modalTargetPrice.value = '';
+
+            const priceText = product.price
+                ? parseFloat(product.price).toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' ' + (product.currency || 'TRY')
+                : 'Fiyat yok';
+
+            modalProductInfo.innerHTML =
+                '<div class="modal__product-card">' +
+                    (product.image_url ? '<img src="' + escapeAttr(product.image_url) + '" alt="" class="modal__product-img">' : '<span class="modal__product-img-placeholder">📦</span>') +
+                    '<div class="modal__product-details">' +
+                        '<p class="modal__product-title">' + escapeHtml(product.title) + '</p>' +
+                        '<p class="modal__product-price">' + escapeHtml(priceText) + '</p>' +
+                        '<span class="product-card__platform platform--' + escapeHtml(product.platform) + '">' + escapeHtml(product.platform) + '</span>' +
+                    '</div>' +
+                '</div>';
+
+            modalOverlay.style.display = 'flex';
+            modalTargetPrice.focus();
+        }
+
+        function closeModal() {
+            modalOverlay.style.display = 'none';
+            currentProduct = null;
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modalCancel.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        modalConfirm.addEventListener('click', function () {
+            if (!currentProduct) return;
+
+            const targetPriceRaw = modalTargetPrice.value.trim().replace(',', '.');
+            const targetPrice = targetPriceRaw ? parseFloat(targetPriceRaw) : null;
+
+            if (targetPriceRaw && isNaN(targetPrice)) {
+                showToast('Geçerli bir hedef fiyat girin.', 'error');
+                return;
+            }
+
+            const payload = {
+                id: currentProduct.id,
+                title: currentProduct.title,
+                url: currentProduct.url,
+                price: currentProduct.price ? parseFloat(currentProduct.price) : null,
+                currency: currentProduct.currency || 'TRY',
+                platform: currentProduct.platform,
+                image_url: currentProduct.image_url || null,
+                target_price: targetPrice
+            };
+
+            modalConfirm.disabled = true;
+            modalConfirm.textContent = '⏳ Ekleniyor...';
+
+            fetch('/compare/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function (res) {
+                return res.json().then(function (data) {
+                    return { ok: res.ok, data: data };
+                });
+            })
+            .then(function (result) {
+                closeModal();
+                if (result.ok) {
+                    showToast('✅ Ürün takip listesine eklendi!', 'success');
+                } else {
+                    showToast('❌ ' + (result.data.error || 'Ürün eklenemedi.'), 'error');
+                }
+            })
+            .catch(function () {
+                closeModal();
+                showToast('❌ Bağlantı hatası. Lütfen tekrar deneyin.', 'error');
+            })
+            .finally(function () {
+                modalConfirm.disabled = false;
+                modalConfirm.textContent = '✅ Takibe Al';
+            });
+        });
+
+    })();
+    </script>
+</body>
+</html>
