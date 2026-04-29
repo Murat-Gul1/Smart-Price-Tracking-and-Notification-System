@@ -15,6 +15,8 @@ from config import DATA_DIR, PRODUCTS_FILE, PRICE_HISTORY_FILE
 
 logger = logging.getLogger(__name__)
 
+SUPPRESS_WINDOW_HOURS = 6
+
 
 def _ensure_data_dir() -> None:
     """data/ dizinini oluşturur (yoksa)."""
@@ -203,6 +205,18 @@ class PriceTracker:
             return True
         return False
 
+    def mark_alert_sent(self, product_id: str, kind: str) -> bool:
+        """Bir alarmın kullanıcıya ulaştığını kaydeder."""
+        product = self._products.get(product_id)
+        if not product or not kind:
+            return False
+
+        product["last_alert_at"] = datetime.now(timezone.utc).isoformat()
+        product["last_alert_kind"] = kind
+        self._save()
+        logger.info(f"[logic] Alarm teslimi kaydedildi: {product_id} kind={kind}")
+        return True
+
     # ── Fiyat Geçmişi ────────────────────────────────────
 
     def get_price_history(self, product_id: str) -> list[dict]:
@@ -228,6 +242,23 @@ class PriceTracker:
 
     # ── Alarm Kontrolü ───────────────────────────────────
 
+    def _is_suppressed(self, product: dict, kind: str) -> bool:
+        """Son SUPPRESS_WINDOW_HOURS icinde ayni tip alarm uretildiyse True."""
+        last = product.get("last_alert_at")
+        last_kind = product.get("last_alert_kind")
+        if not last or last_kind != kind:
+            return False
+
+        try:
+            last_dt = datetime.fromisoformat(last)
+            if last_dt.tzinfo is None:
+                last_dt = last_dt.replace(tzinfo=timezone.utc)
+            delta = datetime.now(timezone.utc) - last_dt
+        except (ValueError, TypeError):
+            return False
+
+        return delta.total_seconds() < SUPPRESS_WINDOW_HOURS * 3600
+
     def _check_alert(
         self,
         product_id: str,
@@ -251,6 +282,7 @@ class PriceTracker:
         if target is not None and new_price <= target:
             alert_data = {
                 "type": "target_reached",
+                "kind": "target",
                 "product_id": product_id,
                 "title": product.get("title", ""),
                 "url": product.get("url", ""),
@@ -274,6 +306,7 @@ class PriceTracker:
             drop_pct = round((1 - new_price / old_price) * 100, 1)
             alert_data = {
                 "type": "price_drop",
+                "kind": "drop",
                 "product_id": product_id,
                 "title": product.get("title", ""),
                 "url": product.get("url", ""),
@@ -290,6 +323,12 @@ class PriceTracker:
                 ),
             }
             logger.info(f"📉 FİYAT DÜŞÜŞ: {product_id} → {old_price} → {new_price} (-%{drop_pct})")
+
+        if alert_data:
+            kind = alert_data["kind"]
+            if self._is_suppressed(product, kind):
+                logger.info(f"[logic] Alarm bastırıldı (cooldown): {product_id} kind={kind}")
+                return None
 
         return alert_data
 

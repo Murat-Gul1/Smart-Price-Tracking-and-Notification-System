@@ -89,8 +89,19 @@ def send_price_alert_email(alert: dict) -> bool:
     Returns:
         bool: Gönderim başarılı mı
     """
-    if not all([GMAIL_ADDRESS, GMAIL_APP_PASSWORD, NOTIFICATION_EMAIL]):
-        logger.warning("E-posta ayarları eksik. E-posta gönderilmedi.")
+    missing = []
+    if not GMAIL_ADDRESS:
+        missing.append("GMAIL_ADDRESS")
+    if not GMAIL_APP_PASSWORD:
+        missing.append("GMAIL_APP_PASSWORD")
+    if not NOTIFICATION_EMAIL:
+        missing.append("NOTIFICATION_EMAIL")
+
+    if missing:
+        logger.info(
+            f"[email] E-posta bildirimi atlandı: yapılandırma eksik "
+            f"(eksik alanlar: {', '.join(missing)})"
+        )
         return False
 
     try:
@@ -112,12 +123,18 @@ def send_price_alert_email(alert: dict) -> bool:
             server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
             server.send_message(msg)
 
-        logger.info(f"📧 E-posta gönderildi: {NOTIFICATION_EMAIL}")
+        logger.info(f"[email] E-posta gönderildi: {NOTIFICATION_EMAIL}")
         return True
 
-    except smtplib.SMTPAuthenticationError:
-        logger.error("Gmail kimlik doğrulama hatası. App Password'ü kontrol edin.")
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error(
+            f"[email] Gmail kimlik doğrulama başarısız. "
+            f"App password doğru mu? GMAIL_ADDRESS: {GMAIL_ADDRESS}. Detay: {e}"
+        )
+        return False
+    except smtplib.SMTPException as e:
+        logger.error(f"[email] SMTP hatası: {e}")
         return False
     except Exception as e:
-        logger.error(f"E-posta gönderim hatası: {e}")
+        logger.error(f"[email] Beklenmeyen e-posta hatası: {e}")
         return False
