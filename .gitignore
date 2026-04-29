@@ -64,6 +64,7 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+data/price_tracker.lock
 
 # Scrapy stuff:
 .scrapy
@@ -205,3 +206,20 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Smart Price Tracker local/runtime files
+*.pyc
+*.pyo
+.venv/
+price_tracker.log
+codex_server_*.log
+debug_*.txt
+api_debug.json
+test_results.json
+data/products.json
+data/price_history.json
+.claude/
+plans/
+projenin-*.md
+.vscode/
+.idea/
