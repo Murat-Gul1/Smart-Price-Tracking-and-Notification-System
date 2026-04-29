@@ -88,12 +88,14 @@ Smart-Price-Tracking-and-Notification-System/
 └── test_selectors.py
 ```
 
+Not: Bu agac blogu ozet yapidir. Guncel servis ve yardimci dosyalarin tam aciklamasi icin asagidaki "Dosya Dosya Aciklama" bolumune bakin.
+
 ## Dosya Dosya Aciklama
 
 ### Giris ve konfigurasyon
 
 - `main.py`
-  Uygulamanin ana giris noktasi. Loglamayi ayarlar, `data/` klasorunu hazirlar, Flask uygulamasini olusturur, scheduler'i baslatir ve varsa Telegram botu ayaga kaldirir.
+  Uygulamanin ana giris noktasi. Loglamayi ayarlar, `data/` klasorunu hazirlar, tek-instance kilidi alir, Flask uygulamasini olusturur, scheduler'i baslatir ve varsa Telegram botu ayaga kaldirir.
 
 - `config.py`
   Tum ayarlari `.env` dosyasindan okur. Port, Flask debug modu, scheduler araligi, headless browser ayari, Gmail ve Telegram bilgileri burada merkezilesir.
@@ -118,6 +120,9 @@ Smart-Price-Tracking-and-Notification-System/
 
 - `app/scheduler.py`
   `APScheduler` ile periyodik fiyat kontrolu yapar. Takipteki tum urunler icin scraper'i cagirir, yeni fiyatlari kaydeder ve olusan alarmlari bildirim servislerine yollar.
+
+- `app/services.py`
+  Web arayuzu, scheduler ve Telegram bot arasinda paylasilan ortak servis katmanidir. Urun ekleme, scrape sonucunu normalize etme ve toplu fiyat kontrolu akislarini tek yerde toplar.
 
 - `app/scraper.py`
   En kritik dosyalardan biridir. Playwright tabanli scraping katmanini barindirir.
@@ -168,6 +173,9 @@ Smart-Price-Tracking-and-Notification-System/
   - secret key uretme
   - basit in-memory rate limiter
 
+- `utils/stealth_compat.py`
+  `playwright-stealth` paketinin JS stealth script'lerini dogrudan yukleyerek Python 3.14 ortamlariyla uyumluluk saglar.
+
 ### Veri dosyalari
 
 - `data/products.json`
@@ -176,7 +184,7 @@ Smart-Price-Tracking-and-Notification-System/
 - `data/price_history.json`
   Her urun icin zaman icindeki fiyat kayitlarini tutar.
 
-Su an repodaki iki dosya da bos `{}` olarak duruyor; uygulama calistikca doldurulacaklar.
+Bu iki dosya local runtime verisidir. Uygulama calistikca doldurulurlar; push oncesi iceriklerinin bilerek commitlendiginin ayrica kontrol edilmesi tavsiye edilir.
 
 ### Test ve debug dosyalari
 
@@ -189,6 +197,9 @@ Su an repodaki iki dosya da bos `{}` olarak duruyor; uygulama calistikca dolduru
 - `fiyat_getir_ornek.py`
   Scraping mantiginin daha genel / ornek bir prototip surumudur. Uretim akisinda zorunlu degildir ama referans olarak yararlidir.
 
+- `scripts/smoke.py`
+  Projenin importlarini ve temel yardimci akislarini hizlica dogrulayan kucuk smoke test scriptidir.
+
 - `api_debug.json`, `debug_html.txt`, `debug_output.txt`, `debug_output2.txt`, `debug_output3.txt`, `test_results.json`
   Gecmis debug ve deneme ciktilaridir. Uygulamanin ana runtime akisinda zorunlu degiller.
 
@@ -200,10 +211,7 @@ Kod tabanina gore desteklenen platformlar:
 - Amazon.com.tr
 - Hepsiburada
 
-Not:
-
-- Ana arayuzdeki bazi sabit metinler hala Trendyol + Amazon vurgusu tasiyor.
-- Ancak backend tarafinda `Hepsiburada` destegi bulunuyor.
+Not: Backend ve UI tarafinda 3 platform da (Trendyol, Amazon.com.tr, Hepsiburada) destekleniyor. Telegram bot komutlari da bu listeyle uyumlu.
 
 ## Veri Yapisi
 
@@ -472,11 +480,16 @@ Kod tabaninda tanimli ana endpoint'ler:
 
 ## Testler Nasil Calistirilir?
 
-Projede test dosyasi bulunuyor ancak `pytest` ve `hypothesis` paketleri `requirements.txt` icinde yer almiyor. Test calistirmak icin once bunlari kurmaniz gerekir.
+Test bagimliliklari `requirements.txt` icinde tanimli. Kurulumdan sonra testleri calistirmak icin:
 
 ```powershell
-pip install pytest hypothesis
 pytest -q
+```
+
+Hizli saglik kontrolu icin:
+
+```powershell
+python scripts/smoke.py
 ```
 
 Mevcut repoda benim yaptigim hizli dogrulama:
@@ -490,7 +503,7 @@ Bu, dosyalarin en azindan Python sozdizimi olarak derlenebildigini gosterir.
 - Uygulama veritabani yerine JSON dosyalari kullaniyor.
 - Bu nedenle tek kullanicili / kucuk olcekli local kullanim icin daha uygun.
 - Scraping tarafinda anti-bot korumalarini asmaga yonelik `stealth` mantigi kullaniliyor.
-- `search_engine.py` icinde bazi aramalar `headless=False` ile calisacak sekilde kurgulanmis; bu, korumali platformlarda gorunur browser acilmasina neden olabilir.
+- `search_engine.py` headless ayarini `config.HEADLESS_BROWSER` uzerinden alir; varsayilan olarak `True` (gorunur pencere acilmaz). Bot korumali sitelerde sorun yasarsan `.env` icinde `HEADLESS_BROWSER=false` yapabilirsin.
 - `main.py` icinde Flask `use_reloader=False` ile calisiyor; bu, scheduler cakislarini onlemek icin yapilmis.
 
 ## Bilinmesi Gereken Sinirlar
