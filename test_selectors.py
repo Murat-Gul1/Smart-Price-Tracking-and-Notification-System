@@ -2,7 +2,8 @@
 import asyncio
 import json
 from playwright.async_api import async_playwright
-from playwright_stealth.stealth import Stealth
+
+from utils.stealth_compat import apply_stealth
 
 
 async def debug():
@@ -15,8 +16,7 @@ async def debug():
         timezone_id="Europe/Istanbul",
     )
     page = await ctx.new_page()
-    stealth = Stealth()
-    await stealth.apply_stealth_async(page)
+    await apply_stealth(page)
 
     # Listen for all API requests
     api_responses = []

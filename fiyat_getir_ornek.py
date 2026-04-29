@@ -20,7 +20,8 @@ import random
 from typing import Dict, Any
 
 from playwright.async_api import async_playwright
-from playwright_stealth.stealth import Stealth
+
+from utils.stealth_compat import apply_stealth
 
 
 # =============================================================
@@ -193,8 +194,7 @@ async def fiyat_getir(url: str) -> Dict[str, Any]:
             page = await context.new_page()
 
             # -- 2. playwright-stealth eklentisini entegre et ------
-            stealth = Stealth()
-            await stealth.apply_stealth_async(page)
+            await apply_stealth(page)
 
             # -- 3. Ek JavaScript anti-detection onlemleri ----------
             # Bu script sayfa yüklenmeden önce enjekte edilir.

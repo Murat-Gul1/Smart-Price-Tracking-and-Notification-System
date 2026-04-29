@@ -9,6 +9,7 @@ import asyncio
 import logging
 from urllib.parse import quote_plus
 
+from config import HEADLESS_BROWSER
 from utils.security import generate_product_id
 
 logger = logging.getLogger(__name__)
@@ -129,6 +130,19 @@ class SearchEngine:
         """Platform için arama URL'si üretir (modül düzeyindeki fonksiyona delege eder)."""
         return build_search_url(platform, query)
 
+    async def _search_with_scraper(self, scraper_cls, query: str, headless: bool) -> list[dict]:
+        """Tek scraper denemesini calistirir ve browser kaynaklarini kapatir."""
+        scraper = scraper_cls(headless=headless)
+        try:
+            await scraper.launch()
+            page = await scraper._create_stealth_page()
+            try:
+                return await scraper.search_products(page, query)
+            finally:
+                await page.close()
+        finally:
+            await scraper.close()
+
     async def search_platform(self, platform: str, query: str) -> list[dict]:
         """
         Tek bir platformda arama yapar ve top 3 sonucu döndürür.
@@ -155,18 +169,15 @@ class SearchEngine:
             raise ValueError(f"Desteklenmeyen platform: '{platform}'")
 
         scraper_cls = scraper_map[platform]
-        # headless=False: Trendyol (Cloudflare) ve Hepsiburada bot korumasını geçmek için
-        scraper = scraper_cls(headless=False)
-
-        try:
-            await scraper.launch()
-            page = await scraper._create_stealth_page()
-            try:
-                results = await scraper.search_products(page, query)
-            finally:
-                await page.close()
-        finally:
-            await scraper.close()
+        # headless ayarı config.HEADLESS_BROWSER üzerinden gelir; varsayılan True.
+        # Bot korumalı sitelerde sorun olursa .env'de HEADLESS_BROWSER=false yapılabilir.
+        results = await self._search_with_scraper(scraper_cls, query, HEADLESS_BROWSER)
+        if HEADLESS_BROWSER and not results and platform in {"amazon", "hepsiburada"}:
+            logger.info(
+                "[search_engine] %s headless sonuc vermedi; offscreen headed fallback deneniyor.",
+                platform,
+            )
+            results = await self._search_with_scraper(scraper_cls, query, False)
 
         # Her sonuca ID ekle
         for item in results:

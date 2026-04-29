@@ -10,6 +10,7 @@ playwright-stealth ile bot tespiti engellenir.
 """
 
 import asyncio
+import json
 import logging
 import random
 import re
@@ -18,9 +19,9 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from playwright.async_api import async_playwright, Page, Browser, BrowserContext
-from playwright_stealth.stealth import Stealth
 
 from utils.security import detect_platform, sanitize_url
+from utils.stealth_compat import apply_stealth
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,149 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
 ]
+
+
+_PRICE_TOKEN_RE = re.compile(r"\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?")
+
+
+def _parse_price_token(token: str) -> Optional[float]:
+    cleaned = token.strip()
+    if not cleaned:
+        return None
+    if "," in cleaned:
+        cleaned = cleaned.replace(".", "").replace(",", ".")
+    elif "." in cleaned:
+        cleaned = cleaned.replace(".", "")
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
+def _parse_price_value(value) -> Optional[float]:
+    """Farkli fiyat formatlarini ilk makul TL degerine cevir."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+
+    text = str(value).strip()
+    if not text:
+        return None
+
+    tl_tokens = re.findall(
+        r"(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)\s*(?:TL|TRY|₺)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    tokens = tl_tokens or _PRICE_TOKEN_RE.findall(text)
+
+    for token in tokens:
+        price = _parse_price_token(token)
+        if price is not None and 1 <= price <= 1_000_000:
+            return price
+    return None
+
+
+def _iter_product_nodes(node):
+    """JSON-LD icinde Product dugumlerini bul."""
+    if isinstance(node, list):
+        for item in node:
+            yield from _iter_product_nodes(item)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    node_type = node.get("@type")
+    if node_type == "Product" or (isinstance(node_type, list) and "Product" in node_type):
+        yield node
+
+    for value in node.values():
+        if isinstance(value, (dict, list)):
+            yield from _iter_product_nodes(value)
+
+
+def _extract_image_url(image_value) -> Optional[str]:
+    """Schema.org image alanindan ilk URL'yi al."""
+    if isinstance(image_value, str):
+        return image_value
+    if isinstance(image_value, list):
+        for item in image_value:
+            url = _extract_image_url(item)
+            if url:
+                return url
+    if isinstance(image_value, dict):
+        return _extract_image_url(image_value.get("contentUrl") or image_value.get("url"))
+    return None
+
+
+def _extract_brand_name(brand_value) -> Optional[str]:
+    if isinstance(brand_value, str):
+        return brand_value
+    if isinstance(brand_value, dict):
+        return brand_value.get("name")
+    return None
+
+
+def _extract_offer_data(offers_value) -> dict:
+    if isinstance(offers_value, list):
+        for offer in offers_value:
+            if isinstance(offer, dict):
+                return offer
+        return {}
+    if isinstance(offers_value, dict):
+        return offers_value
+    return {}
+
+
+async def _parse_schema_product(page: Page) -> Optional[dict]:
+    """Sayfadaki JSON-LD Product verisini parse et."""
+    try:
+        raw_blocks = await page.evaluate(
+            """() => Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
+            .map((el) => el.textContent || '')"""
+        )
+    except Exception:
+        return None
+
+    for raw in raw_blocks:
+        if not raw or not raw.strip():
+            continue
+        try:
+            data = json.loads(raw)
+        except Exception:
+            continue
+
+        for product in _iter_product_nodes(data):
+            offers = _extract_offer_data(product.get("offers"))
+            availability = str(offers.get("availability", "")).lower()
+            rating_data = product.get("aggregateRating", {})
+
+            parsed = {
+                "title": product.get("name") or "Baslik bulunamadi",
+                "brand": _extract_brand_name(product.get("brand")),
+                "price": _parse_price_value(offers.get("price")),
+                "currency": offers.get("priceCurrency") or "TRY",
+                "image_url": _extract_image_url(product.get("image")),
+                "in_stock": "instock" in availability if availability else True,
+                "rating": _parse_price_value(rating_data.get("ratingValue")),
+            }
+
+            if parsed["title"] or parsed["price"] is not None:
+                return parsed
+
+    return None
+
+
+def _needs_headed_retry(result: dict) -> bool:
+    """Headless sonucu supheliyse ikinci deneme yap."""
+    title = (result.get("title") or "").strip().lower()
+    return (
+        result.get("price") is None
+        or title in {"", "baslik bulunamadi", "başlık bulunamadı"}
+        or result.get("error") in {"captcha", "security"}
+    )
 
 
 # ══════════════════════════════════════════════════════════
@@ -59,17 +203,24 @@ class StealthScraper(ABC):
         """Playwright tarayıcısını stealth modda başlatır."""
         self._playwright = await async_playwright().start()
 
+        launch_args = [
+            "--disable-blink-features=AutomationControlled",
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-infobars",
+            "--window-size=1920,1080",
+            "--disable-extensions",
+        ]
+        if not self.headless:
+            launch_args.extend([
+                "--start-minimized",
+                "--window-position=-32000,-32000",
+            ])
+
         self._browser = await self._playwright.chromium.launch(
             headless=self.headless,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--disable-dev-shm-usage",
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-infobars",
-                "--window-size=1920,1080",
-                "--disable-extensions",
-            ],
+            args=launch_args,
         )
 
         # Gerçekçi tarayıcı profili oluştur
@@ -105,8 +256,7 @@ class StealthScraper(ABC):
         page = await self._context.new_page()
 
         # playwright-stealth patch'ini uygula
-        stealth = Stealth()
-        await stealth.apply_stealth_async(page)
+        await apply_stealth(page)
 
         # Ek anti-detection önlemleri
         await page.add_init_script("""
@@ -278,6 +428,11 @@ class TrendyolScraper(StealthScraper):
             if api_data:
                 return api_data
 
+        schema_data = await _parse_schema_product(page)
+        if schema_data and schema_data.get("price") is not None:
+            logger.info("[trendyol] JSON-LD verisi ile fiyat bulundu.")
+            return schema_data
+
         logger.warning("[trendyol] API başarısız, fallback parsing yapılıyor...")
 
         # Yöntem 2: Page title + meta tag'lerden fallback
@@ -447,6 +602,10 @@ class TrendyolScraper(StealthScraper):
         API başarısız olduğunda page title ve meta tag'lerden veri çıkarır.
         Trendyol page title formatı: "Ürün Adı Fiyatı, Yorumları - Trendyol"
         """
+        schema_data = await _parse_schema_product(page)
+        if schema_data:
+            return schema_data
+
         page_title = await page.title()
         title = page_title
 
@@ -524,6 +683,10 @@ class TrendyolScraper(StealthScraper):
                     price_el = await card.query_selector(".single-price, [class*=single-price]")
                     if not price_el:
                         price_el = await card.query_selector(".price-section, [class*=price-section]")
+                    if not price_el:
+                        price_el = await card.query_selector("[class*=sale], [class*=Sale]")
+                    if not price_el:
+                        price_el = await card.query_selector("[class*=discounted], [class*=Discounted]")
                     price_text = (await price_el.inner_text()).strip() if price_el else ""
                     price = self._parse_price_text(price_text)
 
@@ -556,14 +719,7 @@ class TrendyolScraper(StealthScraper):
     @staticmethod
     def _parse_price_text(text: str) -> Optional[float]:
         """Fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
-        if not text:
-            return None
-        cleaned = re.sub(r"[^\d.,]", "", text)
-        cleaned = cleaned.replace(".", "").replace(",", ".")
-        try:
-            return float(cleaned)
-        except ValueError:
-            return None
+        return _parse_price_value(text)
 
 
 # ══════════════════════════════════════════════════════════
@@ -634,7 +790,10 @@ class AmazonScraper(StealthScraper):
         """CAPTCHA sayfası olup olmadığını kontrol eder."""
         try:
             captcha = await page.query_selector("form[action*='validateCaptcha']")
-            return captcha is not None
+            if captcha is not None:
+                return True
+            title = (await page.title()).lower()
+            return "üzgünüz" in title or "sorry" in title or "captcha" in title
         except Exception:
             return False
 
@@ -749,20 +908,31 @@ class AmazonScraper(StealthScraper):
 
                     # Fiyat
                     price = None
-                    price_el = await card.query_selector(".a-offscreen")
+                    price_el = await card.query_selector(".a-price .a-offscreen")
                     if price_el:
                         price_text = await price_el.inner_text()
                         price = self._parse_price_text(price_text.strip())
                     if price is None:
-                        whole_el = await card.query_selector(".a-price-whole")
+                        whole_el = await card.query_selector(".a-price .a-price-whole")
                         if whole_el:
                             whole_text = (await whole_el.inner_text()).strip()
-                            price = self._parse_price_text(whole_text)
+                            fraction_el = await card.query_selector(".a-price .a-price-fraction")
+                            fraction_text = (await fraction_el.inner_text()).strip() if fraction_el else ""
+                            price = self._parse_price_text(f"{whole_text},{fraction_text}" if fraction_text else whole_text)
 
                     # Link
-                    link_el = await card.query_selector("h2 a[href]")
+                    link_el = await card.query_selector(
+                        "h2 a[href*='/dp/'], a.a-link-normal.s-no-outline[href*='/dp/'], "
+                        "a[href*='/dp/'], a[href*='/gp/product/']"
+                    )
                     href = await link_el.get_attribute("href") if link_el else ""
-                    url = href if href.startswith("http") else f"https://www.amazon.com.tr{href}"
+                    asin = await card.get_attribute("data-asin")
+                    if href:
+                        url = href if href.startswith("http") else f"https://www.amazon.com.tr{href}"
+                    elif asin:
+                        url = f"https://www.amazon.com.tr/dp/{asin}"
+                    else:
+                        url = "https://www.amazon.com.tr"
 
                     # Görsel
                     img_el = await card.query_selector(".s-image, img")
@@ -793,14 +963,7 @@ class AmazonScraper(StealthScraper):
     @staticmethod
     def _parse_price_text(text: str) -> Optional[float]:
         """Amazon fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
-        if not text:
-            return None
-        cleaned = re.sub(r"[^\d.,]", "", text)
-        cleaned = cleaned.replace(".", "").replace(",", ".")
-        try:
-            return float(cleaned)
-        except ValueError:
-            return None
+        return _parse_price_value(text)
 
     @staticmethod
     def _parse_rating(text: Optional[str]) -> Optional[float]:
@@ -845,8 +1008,13 @@ class HepsiburadaScraper(StealthScraper):
                 "image_url": None,
                 "in_stock": False,
                 "rating": None,
-                "error": "captcha",
+                "error": "security",
             }
+
+        schema_data = await _parse_schema_product(page)
+        if schema_data and schema_data.get("price") is not None:
+            logger.info("[hepsiburada] JSON-LD verisi ile fiyat bulundu.")
+            return schema_data
 
         title = await self._get_text(page, self.SELECTORS["title"])
         price = await self._extract_price(page)
@@ -938,7 +1106,16 @@ class HepsiburadaScraper(StealthScraper):
         """CAPTCHA sayfası kontrolü."""
         try:
             url = page.url
-            return "captcha" in url.lower() or "robot" in url.lower()
+            title = await page.title()
+            lower_title = title.lower()
+            lower_url = url.lower()
+            return (
+                "captcha" in lower_url
+                or "robot" in lower_url
+                or "güvenlik" in lower_title
+                or "guvenlik" in lower_title
+                or "security" in lower_title
+            )
         except Exception:
             return False
 
@@ -984,14 +1161,7 @@ class HepsiburadaScraper(StealthScraper):
     @staticmethod
     def _parse_price_text(text: str) -> Optional[float]:
         """Fiyat metnini float'a çevirir: '1.299,99 TL' → 1299.99"""
-        if not text:
-            return None
-        cleaned = re.sub(r"[^\d.,]", "", text)
-        cleaned = cleaned.replace(".", "").replace(",", ".")
-        try:
-            return float(cleaned)
-        except ValueError:
-            return None
+        return _parse_price_value(text)
 
 
 # ══════════════════════════════════════════════════════════
@@ -1056,9 +1226,25 @@ async def scrape_product_url(url: str, headless: bool = True) -> dict:
     scraper = get_scraper(url, headless=headless)
     try:
         await scraper.launch()
-        return await scraper.scrape_product(url)
+        result = await scraper.scrape_product(url)
     finally:
         await scraper.close()
+
+    platform = detect_platform(url)
+    if headless and platform in {"trendyol", "hepsiburada"} and _needs_headed_retry(result):
+        logger.warning(f"[{platform}] Headless sonuç yetersiz, headed retry yapılıyor...")
+        retry_scraper = get_scraper(url, headless=False)
+        try:
+            await retry_scraper.launch()
+            retry_result = await retry_scraper.scrape_product(url)
+            if not _needs_headed_retry(retry_result):
+                return retry_result
+        except Exception as e:
+            logger.warning(f"[{platform}] Headed retry başarısız: {e}")
+        finally:
+            await retry_scraper.close()
+
+    return result
 
 
 # ══════════════════════════════════════════════════════════
