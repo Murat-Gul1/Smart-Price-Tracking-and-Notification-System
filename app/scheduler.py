@@ -1,8 +1,8 @@
 """
-Zamanlayıcı Modülü — APScheduler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Periyodik fiyat kontrolü yapar (varsayılan: 6 saatte bir).
-Scraper'ı çağırır, fiyatları günceller, alarm tetikler.
+Zamanlayici Modulu - APScheduler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Periyodik fiyat kontrolu yapar (varsayilan: 6 saatte bir).
+Scraper'i cagirir, fiyatlari gunceller, alarm tetikler.
 """
 
 import asyncio
@@ -11,9 +11,7 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from config import SCRAPE_INTERVAL_HOURS, HEADLESS_BROWSER
-from app.logic import get_tracker
-from app.scraper import scrape_product_url, ScraperError
+from config import HEADLESS_BROWSER, SCRAPE_INTERVAL_HOURS
 
 logger = logging.getLogger(__name__)
 
@@ -23,87 +21,60 @@ _scheduler: BackgroundScheduler | None = None
 
 async def _check_all_prices() -> list[dict]:
     """
-    Tüm takip edilen ürünlerin fiyatlarını kontrol eder.
-    Alarm oluşanları döndürür.
+    Tum takip edilen urunlerin fiyatlarini kontrol eder.
+    Alarm olusanlari dondurur.
     """
-    tracker = get_tracker()
-    products = tracker.get_all_products()
+    from app.services import check_all_tracked_products
 
-    if not products:
-        logger.info("Takip listesi boş. Kontrol atlandı.")
-        return []
-
-    logger.info(f"🔍 {len(products)} ürün kontrol ediliyor...")
-    alerts = []
-
-    for product_id, product in products.items():
-        url = product.get("url")
-        if not url:
-            continue
-
-        try:
-            result = await scrape_product_url(url, headless=HEADLESS_BROWSER)
-
-            alert = tracker.update_price(
-                product_id=product_id,
-                new_price=result.get("price"),
-                in_stock=result.get("in_stock", True),
-                title=result.get("title", ""),
-                image_url=result.get("image_url", ""),
-            )
-
-            if alert:
-                alerts.append(alert)
-
-        except ScraperError as e:
-            logger.error(f"Scraping hatası ({product_id}): {e}")
-        except Exception as e:
-            logger.error(f"Beklenmeyen hata ({product_id}): {e}")
-
-    logger.info(
-        f"✅ Kontrol tamamlandı. "
-        f"{len(products)} ürün kontrol edildi, "
-        f"{len(alerts)} alarm tetiklendi."
-    )
-    return alerts
+    return await check_all_tracked_products(headless=HEADLESS_BROWSER)
 
 
 def _run_price_check() -> None:
-    """Senkron wrapper — APScheduler'dan çağrılır."""
+    """Senkron wrapper - APScheduler'dan cagrilir."""
     from app.email_service import send_price_alert_email
+    from app.services import acknowledge_alert
     from app.telegram_bot import send_telegram_alert
 
     loop = asyncio.new_event_loop()
     try:
         alerts = loop.run_until_complete(_check_all_prices())
 
-        # Alarmları bildir
         for alert in alerts:
-            # E-posta bildirimi
-            try:
-                send_price_alert_email(alert)
-            except Exception as e:
-                logger.error(f"E-posta gönderme hatası: {e}")
+            email_sent = False
+            telegram_sent = False
 
-            # Telegram bildirimi
             try:
-                loop.run_until_complete(send_telegram_alert(alert))
+                email_sent = send_price_alert_email(alert)
             except Exception as e:
-                logger.error(f"Telegram gönderme hatası: {e}")
+                logger.error(f"E-posta gonderme hatasi: {e}")
 
+            try:
+                telegram_sent = loop.run_until_complete(send_telegram_alert(alert))
+            except Exception as e:
+                logger.error(f"Telegram gonderme hatasi: {e}")
+
+            if email_sent or telegram_sent:
+                acknowledge_alert(alert)
+            else:
+                logger.warning(
+                    "[scheduler] Alarm gonderilemedi; cooldown kaydi yazilmadi. "
+                    "product_id=%s kind=%s",
+                    alert.get("product_id"),
+                    alert.get("kind"),
+                )
     finally:
         loop.close()
 
 
 def start_scheduler() -> BackgroundScheduler:
     """
-    Zamanlayıcıyı başlatır.
-    Her SCRAPE_INTERVAL_HOURS saatte bir tüm ürünleri kontrol eder.
+    Zamanlayiciyi baslatir.
+    Her SCRAPE_INTERVAL_HOURS saatte bir tum urunleri kontrol eder.
     """
     global _scheduler
 
     if _scheduler and _scheduler.running:
-        logger.warning("Zamanlayıcı zaten çalışıyor.")
+        logger.warning("Zamanlayici zaten calisiyor.")
         return _scheduler
 
     _scheduler = BackgroundScheduler()
@@ -111,25 +82,27 @@ def start_scheduler() -> BackgroundScheduler:
         _run_price_check,
         trigger=IntervalTrigger(hours=SCRAPE_INTERVAL_HOURS),
         id="price_check_job",
-        name=f"Fiyat Kontrolü (her {SCRAPE_INTERVAL_HOURS} saat)",
+        name=f"Fiyat Kontrolu (her {SCRAPE_INTERVAL_HOURS} saat)",
         replace_existing=True,
         max_instances=1,
     )
     _scheduler.start()
-    logger.info(f"⏰ Zamanlayıcı başlatıldı: her {SCRAPE_INTERVAL_HOURS} saatte bir kontrol yapılacak.")
+    logger.info(
+        f"Zamanlayici baslatildi: her {SCRAPE_INTERVAL_HOURS} saatte bir kontrol yapilacak."
+    )
     return _scheduler
 
 
 def stop_scheduler() -> None:
-    """Zamanlayıcıyı durdurur."""
+    """Zamanlayiciyi durdurur."""
     global _scheduler
     if _scheduler and _scheduler.running:
         _scheduler.shutdown(wait=False)
-        logger.info("⏹️ Zamanlayıcı durduruldu.")
+        logger.info("Zamanlayici durduruldu.")
 
 
 def trigger_manual_check() -> list[dict]:
-    """Manuel fiyat kontrolü tetikler (web arayüzünden kullanılır)."""
+    """Manuel fiyat kontrolu tetikler (web arayuzunden kullanilir)."""
     loop = asyncio.new_event_loop()
     try:
         return loop.run_until_complete(_check_all_prices())

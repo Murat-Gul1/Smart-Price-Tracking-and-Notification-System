@@ -12,7 +12,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 
 from config import FLASK_SECRET_KEY, HEADLESS_BROWSER
 from app.logic import get_tracker
-from app.scraper import scrape_product_url, ScraperError
+from app.scraper import ScraperError
 from utils.security import validate_url, generate_product_id
 
 logger = logging.getLogger(__name__)
@@ -70,29 +70,20 @@ def create_app() -> Flask:
                 flash("❌ Geçersiz hedef fiyat.", "error")
                 return redirect(url_for("index"))
 
-        # Scraping
         try:
-            loop = asyncio.new_event_loop()
-            result = loop.run_until_complete(
-                scrape_product_url(url, headless=HEADLESS_BROWSER)
-            )
-            loop.close()
+            from app.services import add_tracked_product
 
-            # Takip listesine ekle
-            tracker = get_tracker()
-            product_id = generate_product_id(url)
-            tracker.add_product(
-                product_id=product_id,
-                url=url,
-                title=result.get("title", ""),
-                platform=result.get("platform", ""),
-                image_url=result.get("image_url", ""),
-                target_price=target_price,
-                current_price=result.get("price"),
-                currency=result.get("currency", "TRY"),
+            info = asyncio.run(
+                add_tracked_product(
+                    url,
+                    target_price=target_price,
+                    headless=HEADLESS_BROWSER,
+                )
             )
+            product_id = info["product_id"]
+            result = info["scrape_result"]
 
-            title = result.get("title", "Ürün")[:60]
+            title = (result.get("title") or "Ürün")[:60]
             flash(f"✅ Takibe alındı: {title}", "success")
 
         except ScraperError as e:
@@ -149,9 +140,11 @@ def create_app() -> Flask:
         """Manuel fiyat kontrolü tetikler."""
         try:
             from app.scheduler import trigger_manual_check
+            from app.services import acknowledge_alerts
             alerts = trigger_manual_check()
 
             if alerts:
+                acknowledge_alerts(alerts)
                 flash(f"🔔 {len(alerts)} fiyat alarmı tespit edildi!", "success")
             else:
                 flash("✅ Kontrol tamamlandı. Fiyat değişikliği yok.", "info")
@@ -182,7 +175,7 @@ def create_app() -> Flask:
     @app.route("/compare/search", methods=["POST"])
     def compare_search():
         """Ürün adıyla tüm platformlarda arama yapar, JSON döndürür."""
-        from app.search_engine import SearchEngine, validate_search_query, _find_lowest_price
+        from app.search_engine import SearchEngine, validate_search_query
 
         data = request.get_json()
         query = (data or {}).get("query", "")
@@ -192,11 +185,22 @@ def create_app() -> Flask:
 
         try:
             engine = SearchEngine()
-            loop = asyncio.new_event_loop()
-            results = loop.run_until_complete(engine.search_all(query))
-            loop.close()
+            results = asyncio.run(engine.search_all(query))
 
-            lowest_price_id = _find_lowest_price(results)
+            flat_results = []
+            for platform_results in results.values():
+                if isinstance(platform_results, list):
+                    flat_results.extend(platform_results)
+
+            lowest_price_id = None
+            if flat_results:
+                cheapest = min(
+                    (item for item in flat_results if isinstance(item.get("price"), (int, float))),
+                    key=lambda x: x["price"],
+                    default=None,
+                )
+                if cheapest:
+                    lowest_price_id = cheapest.get("id")
             searched_at = datetime.now(timezone.utc).isoformat()
 
             return jsonify({
@@ -218,8 +222,10 @@ def create_app() -> Flask:
         if not data:
             return jsonify({"success": False, "error": "Geçersiz istek gövdesi."}), 400
 
-        product_id = data.get("product_id", "").strip()
+        product_id = (data.get("product_id") or data.get("id") or "").strip()
         url = data.get("url", "").strip()
+        if not product_id and url:
+            product_id = generate_product_id(url)
         title = data.get("title", "")
         platform = data.get("platform", "")
         image_url = data.get("image_url", "")

@@ -9,6 +9,7 @@ import logging
 from typing import Optional
 
 from telegram import Update, Bot
+from telegram.error import Conflict
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -19,8 +20,8 @@ from telegram.ext import (
 
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, HEADLESS_BROWSER
 from app.logic import get_tracker
-from app.scraper import scrape_product_url, ScraperError
-from utils.security import validate_url, generate_product_id
+from app.scraper import ScraperError
+from utils.security import validate_url
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,11 @@ async def send_telegram_alert(alert: dict) -> bool:
     scheduler.py tarafından çağrılır.
     """
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        logger.warning("Telegram ayarları eksik. Bildirim gönderilmedi.")
+        logger.warning(
+            "Telegram bildirimi atlandi: token_set=%s chat_id_set=%s",
+            bool(TELEGRAM_BOT_TOKEN),
+            bool(TELEGRAM_CHAT_ID),
+        )
         return False
 
     try:
@@ -55,9 +60,9 @@ async def send_telegram_alert(alert: dict) -> bool:
                 )
                 logger.info(f"📱 Telegram bildirimi gönderildi (görsel ile).")
                 return True
-            except Exception:
+            except Exception as e:
                 # Görsel gönderilemezse metin olarak gönder
-                pass
+                logger.warning("Telegram gorsel gonderimi basarisiz, metin deneniyor: %s", e)
 
         # Metin olarak gönder
         full_message = f"{message}\n\n🔗 {url}"
@@ -70,7 +75,7 @@ async def send_telegram_alert(alert: dict) -> bool:
         return True
 
     except Exception as e:
-        logger.error(f"Telegram gönderim hatası: {e}")
+        logger.exception(f"Telegram gonderim hatasi: {e}")
         return False
 
 
@@ -88,8 +93,9 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "/liste — Takip listesini göster\n"
         "/sil `<no>` — Ürünü takipten çıkar\n"
         "/kontrol — Manuel fiyat kontrolü\n"
+        "/chatid — Bildirim chat ID'sini göster\n"
         "/yardim — Bu mesajı göster\n\n"
-        "🌐 Desteklenen siteler: Trendyol, Amazon.com.tr"
+        "🌐 Desteklenen siteler: Trendyol, Amazon.com.tr, Hepsiburada"
     )
     await update.message.reply_text(welcome, parse_mode="Markdown")
 
@@ -97,6 +103,21 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """/yardim komutu."""
     await cmd_start(update, context)
+
+
+async def cmd_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/chatid komutu — Bildirim için kullanılacak sohbet ID'sini gösterir."""
+    chat = update.effective_chat
+    if not chat:
+        await update.message.reply_text("Chat ID okunamadı.")
+        return
+
+    await update.message.reply_text(
+        "Bu sohbetin chat ID değeri:\n"
+        f"`{chat.id}`\n\n"
+        "Bunu .env içindeki TELEGRAM_CHAT_ID alanına yaz.",
+        parse_mode="Markdown",
+    )
 
 
 async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -125,22 +146,15 @@ async def cmd_add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("⏳ Ürün bilgileri alınıyor...")
 
     try:
-        # Fiyat bilgisi çek
-        result = await scrape_product_url(url, headless=HEADLESS_BROWSER)
+        from app.services import add_tracked_product
 
-        # Takip listesine ekle
-        tracker = get_tracker()
-        product_id = generate_product_id(url)
-        tracker.add_product(
-            product_id=product_id,
-            url=url,
-            title=result.get("title", ""),
-            platform=result.get("platform", ""),
-            image_url=result.get("image_url", ""),
+        info = await add_tracked_product(
+            url,
             target_price=target_price,
-            current_price=result.get("price"),
-            currency=result.get("currency", "TRY"),
+            headless=HEADLESS_BROWSER,
         )
+        product_id = info["product_id"]
+        result = info["scrape_result"]
 
         price_text = f"{result.get('price', 'N/A')} {result.get('currency', 'TRY')}"
         target_text = f"\n🎯 Hedef: {target_price} {result.get('currency', 'TRY')}" if target_price else ""
@@ -237,27 +251,14 @@ async def cmd_check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await update.message.reply_text(f"🔍 {len(products)} ürün kontrol ediliyor...")
 
+    from app.services import acknowledge_alert, check_all_tracked_products
+
+    alerts = await check_all_tracked_products(headless=HEADLESS_BROWSER)
     alerts_found = 0
-    for pid, product in products.items():
-        url = product.get("url")
-        if not url:
-            continue
-
-        try:
-            result = await scrape_product_url(url, headless=HEADLESS_BROWSER)
-            alert = tracker.update_price(
-                product_id=pid,
-                new_price=result.get("price"),
-                in_stock=result.get("in_stock", True),
-                title=result.get("title", ""),
-                image_url=result.get("image_url", ""),
-            )
-            if alert:
-                alerts_found += 1
-                await update.message.reply_text(alert["message"])
-
-        except Exception as e:
-            logger.error(f"Manuel kontrol hatası ({pid}): {e}")
+    for alert in alerts:
+        alerts_found += 1
+        await update.message.reply_text(alert["message"])
+        acknowledge_alert(alert)
 
     await update.message.reply_text(
         f"✅ Kontrol tamamlandı.\n"
@@ -269,6 +270,26 @@ async def cmd_check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 # ══════════════════════════════════════════════════════════
 #  Bot Başlatma
 # ══════════════════════════════════════════════════════════
+async def telegram_error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Log Telegram polling/handler errors with actionable details."""
+    error = context.error
+    if isinstance(error, Conflict):
+        logger.error(
+            "Telegram polling conflict: ayni bot tokeni icin baska bir getUpdates/polling "
+            "istegi calisiyor. Acik python main.py sureclerini ve getUpdates sekmelerini kapat."
+        )
+        return
+
+    if error:
+        logger.error(
+            "Telegram handler hatasi: %s",
+            error,
+            exc_info=(type(error), error, error.__traceback__),
+        )
+    else:
+        logger.error("Telegram handler hatasi: bilinmeyen hata. update=%r", update)
+
+
 def create_telegram_app():
     """Telegram bot uygulamasını oluşturur (başlatmadan)."""
     if not TELEGRAM_BOT_TOKEN:
@@ -276,11 +297,13 @@ def create_telegram_app():
         return None
 
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    app.add_error_handler(telegram_error_handler)
 
     # Komut handler'ları
     app.add_handler(CommandHandler("start", cmd_start))
     app.add_handler(CommandHandler("yardim", cmd_help))
     app.add_handler(CommandHandler("help", cmd_help))
+    app.add_handler(CommandHandler("chatid", cmd_chat_id))
     app.add_handler(CommandHandler("ekle", cmd_add))
     app.add_handler(CommandHandler("liste", cmd_list))
     app.add_handler(CommandHandler("sil", cmd_remove))
