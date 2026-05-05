@@ -1,44 +1,44 @@
 # Smart Price Tracking and Notification System
 
-Bu proje, e-ticaret sitelerindeki urun fiyatlarini takip etmek, fiyat gecmisini saklamak, platformlar arasi karsilastirma yapmak ve fiyat dususlerinde bildirim gondermek icin gelistirilmis bir Python uygulamasidir.
+This project is a Python application developed to track product prices on e-commerce websites, store price history, perform cross-platform comparisons, and send notifications when prices drop.
 
-Mevcut kod tabaninin ana amaci sunlardir:
+The main purpose of the current codebase is as follows:
 
-- Trendyol, Amazon.com.tr ve Hepsiburada urunlerini takip etmek
-- Belirli bir urun icin hedef fiyat tanimlamak
-- Fiyat gecmisini JSON dosyalarinda saklamak
-- Periyodik olarak fiyat kontrolu yapmak
-- Fiyat dustugunde veya hedef fiyata ulasildiginda e-posta / Telegram bildirimi gondermek
-- Web arayuzu uzerinden urun ekleme, silme, hedef fiyat guncelleme ve manuel kontrol yapmak
-- Ayni urunu farkli platformlarda arayip fiyat karsilastirmasi yapmak
+- Tracking products on Trendyol, Amazon.com.tr, and Hepsiburada
+- Defining a target price for a specific product
+- Storing price history in JSON files
+- Periodically checking prices
+- Sending email/Telegram notifications when the price drops or the target price is reached
+- Adding, deleting products, updating target prices, and performing manual checks via the web interface
+- Searching for the same product on different platforms and comparing prices
 
-## Projenin Genel Calisma Mantigi
+## General Working Principles of the Project
 
-Uygulama temel olarak 5 parcadan olusur:
+The application basically consists of 5 parts:
 
-1. `Flask` tabanli web arayuzu kullanicidan urun URL'si veya arama sorgusu alir.
-2. `Playwright + playwright-stealth` kullanan scraper katmani urun bilgilerini ceker.
-3. `PriceTracker` sinifi urunleri ve fiyat gecmisini `data/` altindaki JSON dosyalarina yazar.
-4. `APScheduler` belli araliklarla tekrar fiyat kontrolu yapar.
-5. Alarm olusursa `email_service.py` ve/veya `telegram_bot.py` uzerinden bildirim gonderilir.
+1. A `Flask`-based web interface receives a product URL or search query from the user.
+2. A scraper layer using `Playwright + playwright-stealth` retrieves product information.
+3. The `PriceTracker` class writes the products and price history to JSON files under `data/`.
+4. `APScheduler` performs price checks at regular intervals.
+5. If an alarm occurs, a notification is sent via `email_service.py` and/or `telegram_bot.py`.
 
-Kisaca akis su sekildedir:
+In short, the workflow is as follows:
 
-`Kullanici -> Web/Telegram -> Scraper -> PriceTracker -> JSON Veri -> Scheduler -> Bildirim`
+`User -> Web/Telegram -> Scraper -> PriceTracker -> JSON Data -> Scheduler -> Notification`
 
-## One Cikan Ozellikler
+## Key Features
 
-- URL ile dogrudan urun takibi
-- Hedef fiyat belirleme
-- Min / max / ortalama fiyat istatistikleri
-- Manuel fiyat kontrolu
-- Otomatik periyodik kontrol
-- Telegram bot komutlari ile urun yonetimi
-- Gmail SMTP ile HTML e-posta bildirimi
-- 3 platformda es zamanli arama ve fiyat karsilastirma
-- Basit ama kullanisli bir web arayuzu
+- Direct product tracking via URL
+- Target price setting
+- Min/max/average price statistics
+- Manual price control
+- Automatic periodic checks
+- Product management with Telegram bot commands
+- HTML email notification via Gmail SMTP
+- Simultaneous search and price comparison across 3 platforms
+- Simple but user-friendly web interface
 
-## Kullanilan Teknolojiler
+## Technologies Used
 
 - Python 3.10+
 - Flask
@@ -48,7 +48,7 @@ Kisaca akis su sekildedir:
 - python-telegram-bot
 - python-dotenv
 
-## Klasor ve Dosya Yapisi
+## Folder and File Structure
 
 ```text
 Smart-Price-Tracking-and-Notification-System/
@@ -88,62 +88,60 @@ Smart-Price-Tracking-and-Notification-System/
 └── test_selectors.py
 ```
 
-Not: Bu agac blogu ozet yapidir. Guncel servis ve yardimci dosyalarin tam aciklamasi icin asagidaki "Dosya Dosya Aciklama" bolumune bakin.
+Note: This tree block is a summary structure. For a full description of current services and helper files, see the "File Description" section below.
 
-## Dosya Dosya Aciklama
+## File Description
 
-### Giris ve konfigurasyon
+### Introduction and Configuration
 
 - `main.py`
-  Uygulamanin ana giris noktasi. Loglamayi ayarlar, `data/` klasorunu hazirlar, tek-instance kilidi alir, Flask uygulamasini olusturur, scheduler'i baslatir ve varsa Telegram botu ayaga kaldirir.
+The application's main entry point. It configures logging, prepares the `data/` folder, obtains a single-instance lock, creates the Flask application, starts the scheduler, and activates the Telegram bot if one exists.
 
 - `config.py`
-  Tum ayarlari `.env` dosyasindan okur. Port, Flask debug modu, scheduler araligi, headless browser ayari, Gmail ve Telegram bilgileri burada merkezilesir.
-
+It reads all settings from the `.env` file. Port, Flask debug mode, scheduler interval, headless browser settings, Gmail and Telegram information are all centralized here.
 - `requirements.txt`
-  Projenin calismasi icin gereken Python paketlerini listeler.
+Lists the Python packages required for the project to run.
 
 - `.env.example`
-  Ortam degiskenleri icin ornek sablon dosyasi. Gercek calismada bunun kopyasi `.env` olarak kullanilmalidir.
+Example template file for environment variables. A copy of this should be used as a `.env` file in the actual project.
 
-### Uygulama cekirdegi
+### Application Core
 
 - `app/web.py`
-  Flask route'larini tanimlar. Ana sayfa, urun ekleme, urun silme, hedef fiyat guncelleme, manuel kontrol, fiyat gecmisi API'si ve karsilastirma sayfasi burada bulunur.
+Defines Flask routes. The homepage, product adding, product deletion, target price update, manual check, price history API, and comparison page are located here.
 
 - `app/logic.py`
-  Projenin is mantiginin merkezidir. `PriceTracker` sinifi:
-  - urun ekler / gunceller / siler
-  - fiyat gecmisini tutar
-  - istatistik uretir
-  - fiyat dususu ve hedef fiyat alarmini hesaplar
+This is the core of the project's business logic. The `PriceTracker` class:
+- adds/updates/deletes products
+- keeps track of price history
+- generates statistics
+- calculates price drop and target price alerts
 
 - `app/scheduler.py`
-  `APScheduler` ile periyodik fiyat kontrolu yapar. Takipteki tum urunler icin scraper'i cagirir, yeni fiyatlari kaydeder ve olusan alarmlari bildirim servislerine yollar.
+Performs periodic price checks with `APScheduler`. Calls the scraper for all tracked products, records the new prices, and sends the resulting alarms to notification services.
 
 - `app/services.py`
-  Web arayuzu, scheduler ve Telegram bot arasinda paylasilan ortak servis katmanidir. Urun ekleme, scrape sonucunu normalize etme ve toplu fiyat kontrolu akislarini tek yerde toplar.
+This is a shared service layer between the web interface, scheduler, and Telegram bot. It brings together product addition, scrape result normalization, and bulk price check workflows in one place.
 
 - `app/scraper.py`
-  En kritik dosyalardan biridir. Playwright tabanli scraping katmanini barindirir.
-  Icerik olarak:
-  - `StealthScraper`: ortak temel sinif
-  - `TrendyolScraper`
-  - `AmazonScraper`
-  - `HepsiburadaScraper`
-  - `get_scraper()`: URL'ye gore uygun scraper secimi
-  - `scrape_product_url()`: tek URL icin kolay kullanim fonksiyonu
-  - `scrape_multiple_urls()`: toplu scraping yardimcisi
+This is one of the most critical files. It contains the Playwright-based scraping layer.
+Contents:
+- `StealthScraper`: common base class
+- `TrendyolScraper`
+- `AmazonScraper`
+- `HepsiburadaScraper`
+- `get_scraper()`: selects the appropriate scraper based on the URL
+- `scrape_product_url()`: easy-to-use function for a single URL
+- `scrape_multiple_urls()`: bulk scraping helper
 
 - `app/search_engine.py`
-  Karsilastirma ekraninin arka plan mantigini yonetir. Kullanici sorgusunu 3 platform icin ayri ayri calistirir, sonuclari toplar, siralar ve en dusuk fiyatli urunu bulur.
+Manages the background logic of the comparison screen. Runs the user query separately for 3 platforms, sums and sorts the results, and finds the lowest priced product.
 
 - `app/email_service.py`
-  Gmail SMTP ile fiyat alarm e-postasi gonderir. Hem duz metin hem de HTML formatinda e-posta olusturur.
+Sends price alert emails via Gmail SMTP. Creates emails in both plain text and HTML format.
 
 - `app/telegram_bot.py`
-  Telegram bot komutlarini ve scheduler tarafindan kullanilan Telegram bildirim gonderimini icerir.
-  Desteklenen komutlar:
+Contains Telegram bot commands and Telegram notification sending used by the scheduler. Supported commands:
   - `/start`
   - `/yardim`
   - `/ekle <url> [hedef_fiyat]`
@@ -151,74 +149,71 @@ Not: Bu agac blogu ozet yapidir. Guncel servis ve yardimci dosyalarin tam acikla
   - `/sil <no>`
   - `/kontrol`
 
-### Arayuz
+### Interface(UI)
 
 - `app/templates/index.html`
-  Ana takip paneli. Urun ekleme formu, takip listesi, hedef fiyat guncelleme alani, manuel kontrol butonu ve fiyat istatistikleri burada gosterilir.
+Main tracking panel. The product addition form, watchlist, target price update area, manual control button, and price statistics are displayed here.
 
 - `app/templates/compare.html`
-  Karsilastirma sayfasi. Kullanici urun adini girer, Trendyol / Amazon / Hepsiburada sonuclari ayni ekranda gosterilir.
+Comparison page. The user enters the product name, and Trendyol / Amazon / Hepsiburada results are displayed on the same screen.
 
 - `app/static/style.css`
-  Tum arayuz stillerini icerir. Ana takip sayfasi ve karsilastirma sayfasi icin tek CSS dosyasi kullanilir.
+Contains all interface styles. A single CSS file is used for the main tracking page and comparison page.
 
-### Yardimci katman
+### Auxiliary Layer
 
 - `utils/security.py`
-  Guvenlik ve veri butunlugu icin yardimci fonksiyonlari barindirir:
-  - URL dogrulama
-  - desteklenen platform tespiti
-  - URL temizleme
-  - urun ID uretme
-  - secret key uretme
-  - basit in-memory rate limiter
+Contains auxiliary functions for security and data integrity:
+- URL validation
+- Supported platform detection
+- URL sanitization - Product ID generation
+- Secret key generation
+- Simple in-memory rate limiter
 
 - `utils/stealth_compat.py`
-  `playwright-stealth` paketinin JS stealth script'lerini dogrudan yukleyerek Python 3.14 ortamlariyla uyumluluk saglar.
+Provides compatibility with Python 3.14 environments by directly loading the JS stealth scripts from the `playwright-stealth` package.
 
-### Veri dosyalari
+### Data Files
 
 - `data/products.json`
-  Takip edilen urunlerin aktif durumdaki anlik kaydini tutar.
+It keeps a real-time record of the active status of the tracked products.
 
 - `data/price_history.json`
-  Her urun icin zaman icindeki fiyat kayitlarini tutar.
+It keeps track of price records over time for each product.
 
-Bu iki dosya local runtime verisidir. Uygulama calistikca doldurulurlar; push oncesi iceriklerinin bilerek commitlendiginin ayrica kontrol edilmesi tavsiye edilir.
+These two files are local runtime data. They are populated as the application runs; it is recommended to also check that their contents are intentionally committed before the push.
 
-### Test ve debug dosyalari
+### Test and Debug Files
 
 - `tests/test_scraper_properties.py`
-  Hepsiburada scraper ciktilarinin belirli alanlari garanti edip etmedigini property-based test mantigiyla kontrol eder.
+Checks whether the Hepsiburada scraper outputs guarantee certain fields using property-based testing logic.
 
 - `test_selectors.py`
-  Trendyol tarafinda API/selector kesfi icin hazirlanmis debug scriptidir.
+This is a debug script prepared for API/selector discovery on the Trendyol side.
 
 - `fiyat_getir_ornek.py`
-  Scraping mantiginin daha genel / ornek bir prototip surumudur. Uretim akisinda zorunlu degildir ama referans olarak yararlidir.
+This is a more general/example prototype version of the scraping logic. It is not mandatory in the production flow but is useful as a reference.
 
 - `scripts/smoke.py`
-  Projenin importlarini ve temel yardimci akislarini hizlica dogrulayan kucuk smoke test scriptidir.
+This is a small smoke test script that quickly validates the project's imports and basic helper flows.
 
 - `api_debug.json`, `debug_html.txt`, `debug_output.txt`, `debug_output2.txt`, `debug_output3.txt`, `test_results.json`
-  Gecmis debug ve deneme ciktilaridir. Uygulamanin ana runtime akisinda zorunlu degiller.
+These are past debug and test outputs. They are not mandatory in the application's main runtime flow.
 
-## Desteklenen Platformlar
+## Supported Platforms
 
-Kod tabanina gore desteklenen platformlar:
-
+Supported platforms according to codebase:
 - Trendyol
 - Amazon.com.tr
 - Hepsiburada
 
-Not: Backend ve UI tarafinda 3 platform da (Trendyol, Amazon.com.tr, Hepsiburada) destekleniyor. Telegram bot komutlari da bu listeyle uyumlu.
+Note: Backend and UI support is provided for all 3 platforms (Trendyol, Amazon.com.tr, Hepsiburada). Telegram bot commands are also compatible with this list.
 
-## Veri Yapisi
+## Data Structure
 
 ### `products.json`
 
-Her urun asagidaki mantikla tutulur:
-
+Each product is stored according to the following logic:
 ```json
 {
   "product_id": {
@@ -238,7 +233,7 @@ Her urun asagidaki mantikla tutulur:
 
 ### `price_history.json`
 
-Her urun icin zaman serisi kayitlari tutulur:
+Time series records are kept for each product:
 
 ```json
 {
@@ -257,21 +252,21 @@ Her urun icin zaman serisi kayitlari tutulur:
 }
 ```
 
-## Alarm Mantigi
+## Alarm Logic
 
-Uygulama iki durumda alarm uretir:
+The application generates an alarm in two situations:
 
-1. Urun fiyati hedef fiyatin altina veya esigine duserse
-2. Yeni fiyat, onceki kayitli fiyattan daha dusukse
+1. If the product price falls below or at the target price.
+2. If the new price is lower than the previously recorded price.
 
-Alarm oluştugunda:
+When the alarm is triggered:
 
-- E-posta ayarlari varsa Gmail ile e-posta gonderilir
-- Telegram ayarlari varsa Telegram mesaji gonderilir
+- If email settings are available, an email is sent via Gmail.
+- If Telegram settings are available, a Telegram message is sent.
 
-## Ortam Degiskenleri
+## Environment Variables
 
-`.env.example` dosyasina gore kullanilan ortam degiskenleri:
+Environment variables used according to the `.env.example` file:
 
 ```env
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
@@ -289,55 +284,54 @@ FLASK_PORT=5000
 FLASK_DEBUG=false
 ```
 
-### Degiskenlerin anlami
+### Meaning of Variables
 
 - `TELEGRAM_BOT_TOKEN`
-  Telegram bot token'i. Bos birakilirsa bot devreye girmez.
+Telegram bot token. If left blank, the bot will not activate.
 
 - `TELEGRAM_CHAT_ID`
-  Bildirimlerin gidecegi sohbet ID'si.
+Chat ID to which notifications will be sent.
 
 - `GMAIL_ADDRESS`
-  Gonderici Gmail adresi.
+Sender's Gmail address.
 
 - `GMAIL_APP_PASSWORD`
-  Gmail icin uygulama sifresi. Normal hesap sifresi kullanilmaz.
+Application password for Gmail. Normal account password is not used.
 
 - `NOTIFICATION_EMAIL`
-  Bildirimlerin gidecegi alici e-posta adresi.
+Recipient's email address to which notifications will be sent.
 
 - `SCRAPE_INTERVAL_HOURS`
-  Otomatik fiyat kontrolunun kac saatte bir yapilacagi.
+How often the automatic price check will be performed (in hours).
 
 - `HEADLESS_BROWSER`
-  `true` ise browser arka planda acilir. `false` ise tarayici gorunur.
+If `true`, the browser opens in the background. If `false`, the browser is visible.
 
 - `FLASK_SECRET_KEY`
-  Flask session / flash mesajlari icin gizli anahtar.
+Secret key for Flask sessions/Flash messages.
 
 - `FLASK_PORT`
-  Web arayuzunun calisacagi port.
+Port for the web interface to run on.
 
 - `FLASK_DEBUG`
-  Flask debug modunu acar / kapatir.
+Turns Flask debug mode on/off.
 
-## Projeyi Nasil Calistiririm?
+## How Do I Run the Project?
 
-Asagidaki adimlar bu proje icin en dogru baslatma akisini verir.
+The following steps provide the correct startup flow for this project.
 
-### 1. Repoyu acin
-
+### 1. Open the repository
 ```powershell
 cd C:\Users\mertadores\Documents\Smart-Price-Tracking-and-Notification-System
 ```
 
-### 2. Sanal ortam olusturun
+### 2. Create a virtual environment.
 
 ```powershell
 python -m venv .venv
 ```
 
-### 3. Sanal ortami aktif edin
+### 3. Activate the virtual environment.
 
 Windows PowerShell:
 
@@ -357,29 +351,29 @@ macOS / Linux:
 source .venv/bin/activate
 ```
 
-### 4. Python bagimliliklarini kurun
+### 4. Install Python Dependencies
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-### 5. Playwright browser'ini kurun
+### 5. Install the Playwright Browser
 
-Bu adim cok onemli. `playwright` paketi tek basina yeterli degildir; Chromium browser binary'si da kurulmalidir.
+This step is very important. The `playwright` package alone is not sufficient; the Chromium browser binary must also be installed.
 
 ```powershell
 python -m playwright install chromium
 ```
 
-Gerekirse sistem bagimliliklari icin:
+For system dependencies, if necessary:
 
 ```powershell
 python -m playwright install
 ```
 
-### 6. Ortam dosyasini olusturun
+### 6. Create the Environment File
 
-`.env.example` dosyasini kopyalayip `.env` olarak kaydedin.
+Copy the `.env.example` file and save it as `.env`.
 
 Windows PowerShell:
 
@@ -387,9 +381,9 @@ Windows PowerShell:
 Copy-Item .env.example .env
 ```
 
-Daha sonra `.env` dosyasini acip gerekli alanlari doldurun.
+Next, open the `.env` file and fill in the required fields.
 
-Minimum calisma icin genelde su alanlar yeterlidir:
+Generally, the following fields are sufficient for minimum requirements:
 
 ```env
 SCRAPE_INTERVAL_HOURS=6
@@ -399,45 +393,45 @@ FLASK_PORT=5000
 FLASK_DEBUG=false
 ```
 
-E-posta ve Telegram tamamen opsiyoneldir.
+Email and Telegram are completely optional.
 
-### 7. Uygulamayi baslatin
+### 7. Launch the application
 
 ```powershell
 python main.py
 ```
 
-Basarili baslatma sonrasinda uygulama tipik olarak su islemleri yapar:
+After a successful launch, the application typically performs the following actions:
 
-- `data/` klasorunu hazirlar
-- Flask uygulamasini olusturur
-- scheduler'i baslatir
-- Telegram token varsa botu ayaga kaldirir
-- web sunucusunu `http://localhost:5000` adresinde acir
+- Prepares the `data/` folder
+- Creates the Flask application
+- Starts the scheduler
+- Launches the bot if a Telegram token exists
+- Opens the web server at `http://localhost:5000`
 
-### 8. Tarayicida acin
+### 8. Open in browser
 
 ```text
 http://localhost:5000
 ```
 
-## Uygulama Acildiktan Sonra Nasil Kullanilir?
+## How to Use the Application After Opening?
 
-### Web arayuzu
+### Web Interface
 
-1. Ana sayfada urun URL'si girin
-2. Isterseniz hedef fiyat ekleyin
-3. `Takibe Al` butonuna basin
-4. Urun takip listesine eklenecektir
-5. `Manuel Kontrol` ile anlik fiyat kontrolu yapabilirsiniz
-6. Hedef fiyat alanindan mevcut kayitlari guncelleyebilirsiniz
-7. `Karsilastir` sayfasindan ayni urunu farkli platformlarda aratabilirsiniz
+1. Enter the product URL on the main page.
+2. Add a target price if desired.
+3. Click the `Follow` button.
+4. The product will be added to your watchlist.
+5. You can check the price in real-time with `Manual Check`.
+6. You can update existing records from the target price field.
+7. You can search for the same product on different platforms from the `Compare` page.
 
 ### Telegram bot
 
 `.env` dosyasinda Telegram bilgileri varsa bot da ayaga kalkar.
 
-Ornek kullanim:
+Example usage:
 
 ```text
 /ekle https://www.trendyol.com/...
@@ -447,75 +441,73 @@ Ornek kullanim:
 /sil 1
 ```
 
-## Flask Route'lari
+## Flask Routes
 
-Kod tabaninda tanimli ana endpoint'ler:
+Main endpoints defined in the codebase:
 
 - `GET /`
-  Ana takip paneli
+Main tracking panel
 
 - `POST /add`
-  Yeni urunu takip listesine ekler
+Adds the new product to the watchlist
 
 - `POST /remove/<product_id>`
-  Urunu takipten cikarir
+Removes the product from the watchlist
 
 - `POST /target/<product_id>`
-  Hedef fiyati gunceller
+Updates the target price
 
 - `POST /check`
-  Manuel fiyat kontrolu yapar
+Performs a manual price check
 
 - `GET /api/history/<product_id>`
-  Urunun fiyat gecmisini JSON olarak dondurur
+Returns the product's price history as JSON
 
 - `GET /compare`
-  Fiyat karsilastirma sayfasi
+Price comparison page
 
 - `POST /compare/search`
-  Karsilastirma icin arama yapar
+Searches for comparison
 
 - `POST /compare/add`
-  Karsilastirma sonucundan urun takibe eklemeyi hedefler
+Aims to add a product from the comparison result to the watchlist
 
-## Testler Nasil Calistirilir?
+## How to Run Tests?
 
-Test bagimliliklari `requirements.txt` icinde tanimli. Kurulumdan sonra testleri calistirmak icin:
+Test dependencies are defined in `requirements.txt`. To run the tests after installation:
 
 ```powershell
 pytest -q
 ```
-
-Hizli saglik kontrolu icin:
+For a quick health check:
 
 ```powershell
 python scripts/smoke.py
 ```
 
-Mevcut repoda benim yaptigim hizli dogrulama:
+My quick verification of the current repository:
 
-- `python -m compileall .` komutu basariyla calisti
+- The command `python -m compileall .` ran successfully.
 
-Bu, dosyalarin en azindan Python sozdizimi olarak derlenebildigini gosterir.
+This shows that the files can be compiled, at least in Python syntax.
 
-## Mimari Notlar
+## Architectural Notes
 
-- Uygulama veritabani yerine JSON dosyalari kullaniyor.
-- Bu nedenle tek kullanicili / kucuk olcekli local kullanim icin daha uygun.
-- Scraping tarafinda anti-bot korumalarini asmaga yonelik `stealth` mantigi kullaniliyor.
-- `search_engine.py` headless ayarini `config.HEADLESS_BROWSER` uzerinden alir; varsayilan olarak `True` (gorunur pencere acilmaz). Bot korumali sitelerde sorun yasarsan `.env` icinde `HEADLESS_BROWSER=false` yapabilirsin.
-- `main.py` icinde Flask `use_reloader=False` ile calisiyor; bu, scheduler cakislarini onlemek icin yapilmis.
+- The application uses JSON files instead of a database.
+- Therefore, it is more suitable for single-user/small-scale local use.
+- On the scraping side, `stealth` logic is used to bypass anti-bot protections.
+- `search_engine.py` gets the headless setting from `config.HEADLESS_BROWSER`; by default it is `True` (no visible window opens). If you experience problems on bot-protected sites, you can set `HEADLESS_BROWSER=false` in `.env`. - Flask uses `use_reloader=False` in `main.py`; this is done to prevent scheduler crashes.
 
-## Bilinmesi Gereken Sinirlar
+## Important Limitations
 
-- E-ticaret siteleri HTML yapilarini degistirdiginde selector veya parse mantigi kirilabilir.
-- Anti-bot sistemleri nedeniyle scraping her zaman %100 stabil olmayabilir.
-- `products.json` ve `price_history.json` dosyalari eszamanli ve yuksek trafikli kullanim icin uygun degildir.
-- Scheduler varsayilan olarak belirli araliklarla calisir; uygulama baslar baslamaz otomatik ilk tarama yapmaz, bunun icin `Manuel Kontrol` kullanabilirsiniz.
+- The selector or parse logic may break when e-commerce sites change their HTML structures.
+- Scraping may not always be 100% stable due to anti-bot systems.
+- The `products.json` and `price_history.json` files are not suitable for simultaneous and high-traffic use.
+- The scheduler runs at specific intervals by default; it does not perform an automatic initial scan as soon as the application starts. You can use `Manual Control` for this.
 
-## Kisa Baslatma Ozeti
+## Short Startup Summary
 
-Sadece hizli baslatmak istiyorsaniz:
+If you only want a quick start:
 
 ```powershell
 python -m venv .venv
@@ -525,13 +517,12 @@ python -m playwright install chromium
 Copy-Item .env.example .env
 python main.py
 ```
-
-Ardindan:
+Then:
 
 ```text
 http://localhost:5000
 ```
 
-## Sonuc
+## Result
 
-Bu projenin mevcut amaci, tek bir yerden birden fazla e-ticaret platformundaki urunleri takip etmek, fiyat hareketlerini kaydetmek ve kullaniciyi zamaninda haberdar etmektir. Kod yapisi, web arayuzu + scraping + scheduler + bildirim servisleri seklinde bolunmus ve kucuk/orta olcekli bireysel kullanim senaryolari icin uygun bir temel sunmaktadir.
+The current goal of this project is to track products from multiple e-commerce platforms from a single location, record price movements, and inform the user in a timely manner. The code structure is divided into web interface + scraping + scheduler + notification services, providing a suitable foundation for small/medium-scale individual use cases.
