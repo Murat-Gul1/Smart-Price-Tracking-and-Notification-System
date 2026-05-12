@@ -1,1 +1,52 @@
-{}
+{
+  "722ab452f118": {
+    "url": "https://www.trendyol.com/apple/iphone-15-128-gb-mavi-p-762254881",
+    "title": "Apple iPhone 15 128 GB Siyah",
+    "platform": "trendyol",
+    "image_url": "https://cdn.dsmcdn.com/ty1594/prod/QC/20241027/17/7a203c1b-d121-3600-9ee5-3eeeb4d12767/1_org_zoom.jpg",
+    "target_price": null,
+    "current_price": 48499.0,
+    "currency": "TRY",
+    "added_at": "2026-04-28T20:50:25.481579+00:00",
+    "last_checked": "2026-05-06T10:21:35.877074+00:00",
+    "in_stock": true
+  },
+  "7a64b73eb2d9": {
+    "url": "https://www.trendyol.com/d1-milano/ultra-thin-38mm-utbu01-kol-saati-p-861932000?boutiqueId=61&merchantId=107615&adjust_t=mk12x3o_m4o2h83&adjust_tracker_limit=999999999&adjust_creative=861932000&link_contentid=861932000&utm_campaign=861932000&adjust_campaign=product_free_20264297_TR&utm_source=share&utm_medium=product_free&link_userID=115096145&adjust_adgroup=115096145&utm_term=115096145",
+    "title": "D1 Milano Ultra Thin 38mm UTBU01 Kol Saati",
+    "platform": "trendyol",
+    "image_url": "https://cdn.dsmcdn.com/ty1607/prod/QC/20241125/17/cc4f03d9-f827-3517-a16f-f4cd37c55962/1_org_zoom.jpg",
+    "target_price": 16799.0,
+    "current_price": 16700.0,
+    "currency": "TRY",
+    "added_at": "2026-04-29T07:39:45.422472+00:00",
+    "last_checked": "2026-05-06T10:21:44.940507+00:00",
+    "in_stock": true,
+    "last_alert_at": "2026-05-06T10:22:11.617218+00:00",
+    "last_alert_kind": "target"
+  },
+  "87784492d60a": {
+    "url": "https://www.amazon.com.tr/dp/B0FQFYN66J?th=1",
+    "title": "Apple iPhone 17 Pro 256 GB: 120 Hz’e kadar ProMotion teknolojisine sahip 6.3 inç ekran, A19 Pro Çip, Çığır Açıcı Pil Ömrü, Center Stage Ön Kamera özellikli Pro Fusion Kamera Sistemi; Kozmik Turuncu",
+    "platform": "amazon",
+    "image_url": "https://m.media-amazon.com/images/I/716Bo6d914L._AC_SL1500_.jpg",
+    "target_price": null,
+    "current_price": null,
+    "currency": "TRY",
+    "added_at": "2026-04-29T20:25:56.514423+00:00",
+    "last_checked": "2026-05-06T10:22:01.978472+00:00",
+    "in_stock": false
+  },
+  "95ff26b155e8": {
+    "url": "https://www.trendyol.com/sinbo/scm-9031-turk-kahve-makinesi-gumus-500w-guc-p-1105457611",
+    "title": "Sinbo SCM-9031 Türk Kahve Makinesi - Gümüş – 500W Güç",
+    "platform": "trendyol",
+    "image_url": "https://cdn.dsmcdn.com/ty1000325/product/media/images/prod/PIM/20260219/13/694367a7-29d2-4ce2-ad8c-1e33f2c463a3/1_org_zoom.jpg",
+    "target_price": null,
+    "current_price": 1299.0,
+    "currency": "TRY",
+    "added_at": "2026-05-06T10:22:35.460991+00:00",
+    "last_checked": "2026-05-06T10:22:35.460991+00:00",
+    "in_stock": true
+  }
+}
