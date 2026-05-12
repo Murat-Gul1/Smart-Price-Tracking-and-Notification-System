@@ -1,0 +1,14 @@
+cd C:\Users\mertadores\Documents\Smart-Price-Tracking-and-Notification-System
+.\.venv\Scripts\Activate.ps1
+python main.py
+
+
+
+olmazsa 
+
+cd C:\Users\mertadores\Documents\Smart-Price-Tracking-and-Notification-System
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m playwright install chromium
+python main.py
